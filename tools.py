@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 import struct
 
+class InvalidVarInt(Exception):
+    pass
+
 class VarInt():
     """Implement the varint type used in mumble"""
     def __init__(self, value=0):

@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 import time
+from threading import Lock
+from collections import deque
+
+import opuslib
 
 from constants import *
-from threading import Lock
-import pycelt
-import pyopus
 from errors import CodecNotSupportedError
-from collections import deque
 
 class SoundQueue():
     """
@@ -27,9 +27,7 @@ class SoundQueue():
         # to be sure, create every supported decoders for all users
         # sometime, clients still use a codec for a while after server request another...
         self.decoders = {
-                    PYMUMBLE_AUDIO_TYPE_CELT_ALPHA: pycelt.CeltDecoder(PYMUMBLE_SAMPLERATE, 1, "0.7"),
-                    PYMUMBLE_AUDIO_TYPE_CELT_BETA: pycelt.CeltDecoder(PYMUMBLE_SAMPLERATE, 1, "0.11"),
-                    PYMUMBLE_AUDIO_TYPE_OPUS: pyopus.OpusDecoder(PYMUMBLE_SAMPLERATE, 1)                    
+                    PYMUMBLE_AUDIO_TYPE_OPUS: opuslib.Decoder(PYMUMBLE_SAMPLERATE, 1)
         }
 
         

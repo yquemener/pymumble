@@ -3,11 +3,13 @@
 from time import time
 import struct
 import threading
+import socket
+import opuslib
 
 from constants import *
-import pycelt
-import pyopus
+from errors import CodecNotSupportedError
 from tools import VarInt
+
 
 class SoundOutput:
     """
@@ -70,7 +72,7 @@ class SoundOutput:
                 self.pcm = self.pcm[samples:]
                 self.lock.release()
                 
-                encoded = self.encoder.encode(to_encode)
+                encoded = self.encoder.encode(to_encode, len(to_encode)/2)
                          
                 audio_encoded += self.encoder_framesize
                 
@@ -80,7 +82,7 @@ class SoundOutput:
                 else:
                     frameheader = len(encoded)
                     if audio_encoded < self.audio_per_packet and len(self.pcm) > 0:  # if not last frame for the packet, set the terminator bit
-                        frameheader += ( 1 << 7 )
+                        frameheader += (1 << 7)
                     frameheader = struct.pack('!B', frameheader)
                 
                 payload += frameheader + encoded  # add the frame to the packet
@@ -99,16 +101,15 @@ class SoundOutput:
             
             tcppacket = struct.pack("!HL", PYMUMBLE_MSG_TYPES_UDPTUNNEL, len(udppacket)) + udppacket  # encapsulate in tcp tunnel
             
-            while len(tcppacket)>0:
-                sent=self.mumble_object.control_socket.send(tcppacket)
+            while len(tcppacket) > 0:
+                sent = self.mumble_object.control_socket.send(tcppacket)
                 if sent < 0:
                     raise socket.error("Server socket error")
-                tcppacket=tcppacket[sent:]
-        
-            
+                tcppacket = tcppacket[sent:]
+
     def get_audio_per_packet(self):
         """return the configured length of a audio packet (in ms)"""
-        return(self.audio_per_packet)
+        return self.audio_per_packet
     
     def set_audio_per_packet(self, audio_per_packet):
         """set the length of an audio packet (in ms)"""
@@ -117,7 +118,7 @@ class SoundOutput:
         
     def get_bandwidth(self):
         """get the configured bandwidth for the audio output"""
-        return(self.bandwidth)
+        return self.bandwidth
     
     def set_bandwidth(self, bandwidth):
         """set the bandwidth for the audio output"""
@@ -139,12 +140,12 @@ class SoundOutput:
             
             self.Log.debug("Bandwidth is {bandwidth}, downgrading to {bitrate} due to the protocol overhead".format(bandwidth=self.bandwidth, bitrate = self.bandwidth-overhead_per_second))
             
-            self.encoder.set_bitrate(self.bandwidth-overhead_per_second)
+            self.encoder.bitrate = self.bandwidth-overhead_per_second
         
     def add_sound(self, pcm):
         """add sound to be sent (in PCM mono 16 bits signed format)"""
-        if len(pcm) % 2 != 0:  #check that the data is align on 16 bits
-            raise InvalidSoundDataError("pcm data must be mono 16 bits")
+        if len(pcm) % 2 != 0:  # check that the data is align on 16 bits
+            raise Exception("pcm data must be mono 16 bits")
 
         self.lock.acquire()
         self.pcm += pcm
@@ -152,7 +153,7 @@ class SoundOutput:
         
     def get_buffer_size(self):
         """return the size of the unsent buffer in sec"""
-        return(len(self.pcm)/2/PYMUMBLE_SAMPLERATE)
+        return len(self.pcm)/2/PYMUMBLE_SAMPLERATE
         
     def set_default_codec(self, codecversion):
         """Set the default codec to be used to send packets"""
@@ -165,22 +166,12 @@ class SoundOutput:
             return()
         
         if self.codec.opus:
-            self.encoder = pyopus.OpusEncoder(PYMUMBLE_SAMPLERATE, 1)
-            self.encoder.set_vbr(False)
+            self.encoder = opuslib.Encoder(PYMUMBLE_SAMPLERATE, 1, 'voip')
+            self.encoder.vbr = False
             self.encoder_framesize = self.audio_per_packet
             self.codec_type = PYMUMBLE_AUDIO_TYPE_OPUS
-        elif self.codec.prefer_alpha:
-            if self.codec.alpha not in pycelt.SUPPORTED_BITSTREAMS:
-                raise CodecNotSupportedError("CELT bitstream %i not supported" % codecversion.alpha)
-            self.encoder = pycelt.CeltEncoder(PYMUMBLE_SAMPLERATE, 1, pycelt.SUPPORTED_BITSTREAMS[self.codec.alpha])
-            self.encoder_framesize = PYMUMBLE_SEQUENCE_DURATION
-            self.codec_type = PYMUMBLE_AUDIO_TYPE_CELT_ALPHA
         else:
-            if self.codec.beta not in pycelt.SUPPORTED_BITSTREAMS:
-                raise CodecNotSupportedError("CELT bitstream %i not supported" % codecversion.beta)
-            self.encoder = pycelt.CeltEncoder(PYMUMBLE_SAMPLERATE, 1, pycelt.SUPPORTED_BITSTREAMS[self.codec.beta])
-            self.encoder_framesize = PYMUMBLE_SEQUENCE_DURATION 
-            self.codec_type = PYMUMBLE_AUDIO_TYPE_CELT_BETA
+            raise CodecNotSupportedError()
 
         self._set_bandwidth()
 

@@ -13,14 +13,12 @@ import users
 import channels
 import blobs
 import commands
-import messages
 import callbacks
 import tools
 import soundoutput
 
 import mumble_pb2
 
-from pycelt import SUPPORTED_BITSTREAMS
 
 class Mumble(threading.Thread):
     """
@@ -136,7 +134,6 @@ class Mumble(threading.Thread):
         authenticate = mumble_pb2.Authenticate()
         authenticate.username = self.user
         authenticate.password = self.password
-        authenticate.celt_versions.extend(SUPPORTED_BITSTREAMS.keys())
 #        authenticate.celt_versions.extend([-2147483637])  # for debugging - only celt 0.7
         authenticate.opus = True
         self.Log.debug("sending: authenticate: %s", authenticate)
