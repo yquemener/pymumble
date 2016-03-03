@@ -35,9 +35,9 @@ class Mumble(threading.Thread):
         reconnect=if True, try to reconnect if disconnected
         debug=if True, send debugging messages (lot of...) to the stdout
         """
-#TODO: client certificate authentication
-#TODO: exit both threads properly
-#TODO: use UDP audio
+# TODO: client certificate authentication
+# TODO: exit both threads properly
+# TODO: use UDP audio
         threading.Thread.__init__(self)
         
         self.Log = logging.getLogger("PyMumble")  # logging object for errors and debugging
@@ -68,7 +68,7 @@ class Mumble(threading.Thread):
         
         self.application = PYMUMBLE_VERSION_STRING
 
-        self.callbacks = callbacks.CallBacks()  #callbacks management
+        self.callbacks = callbacks.CallBacks()  # callbacks management
 
         self.ready_lock = threading.Lock()  # released when the connection is fully established with the server
         self.ready_lock.acquire()
@@ -176,22 +176,22 @@ class Mumble(threading.Thread):
                 
     def ping(self):
         """Send the keepalive through available channels"""
-#TODO: Ping counters        
+# TODO: Ping counters
         ping = mumble_pb2.Ping()
-        ping.timestamp=int(time.time())
+        ping.timestamp = int(time.time())
         self.Log.debug("sending: ping: %s", ping)
         self.send_message(PYMUMBLE_MSG_TYPES_PING, ping)
     
     def send_message(self, type, message):
         """Send a control message to the server"""
-        packet=struct.pack("!HL", type, message.ByteSize()) + message.SerializeToString()
+        packet = struct.pack("!HL", type, message.ByteSize()) + message.SerializeToString()
 
-        while len(packet)>0:
+        while len(packet) > 0:
             self.Log.debug("sending message")
-            sent=self.control_socket.send(packet)
+            sent = self.control_socket.send(packet)
             if sent < 0:
                 raise socket.error("Server socket error")
-            packet=packet[sent:]
+            packet = packet[sent:]
             
     def read_control_messages(self):
         """Read control messages coming from the server"""
@@ -381,7 +381,7 @@ class Mumble(threading.Thread):
 #        self.Log.debug("sound packet : " + toHex(message))  # for debugging
                 
         (header, ) = struct.unpack("!B", message[pos])  # extract the header
-        type = ( header & 0b11100000 ) >> 5
+        type = (header & 0b11100000) >> 5
         target = header & 0b00011111
         pos += 1
         
@@ -397,7 +397,7 @@ class Mumble(threading.Thread):
         self.Log.debug("audio packet received from %i, sequence %i, type:%i, target:%i, lenght:%i", session.value, sequence.value, type, target, len(message))
         
         terminator = False  # set to true if it's the last 10 ms audio frame for the packet (used with CELT codec)
-        while ( pos < len(message)) and not terminator:  # get the audio frames one by one
+        while (pos < len(message)) and not terminator:  # get the audio frames one by one
             if type == PYMUMBLE_AUDIO_TYPE_OPUS:
                 size = tools.VarInt()  # OPUS use varint for the frame length
                 
@@ -406,8 +406,8 @@ class Mumble(threading.Thread):
                 
                 if not (size & 0x2000):  # terminator is 0x2000 in the resulting int.
                     terminator = True    # should actually always be 0 as OPUS can use variable length audio frames
-                
-                size = size & 0x1fff  # isolate the size from the terminator
+
+                size &= 0x1fff  # isolate the size from the terminator
             else:
                 (header, ) = struct.unpack("!B", message[pos])  # CELT length and terminator is encoded in a 1 byte int
                 if not (header & 0b10000000):
@@ -415,7 +415,7 @@ class Mumble(threading.Thread):
                 size = header & 0b01111111
                 pos += 1
     
-            self.Log.debug("Audio frame : time:%f, last:%s, size:%i, type:%i, target:%i, pos:%i",time.time(), str(terminator), size, type, target, pos-1)
+            self.Log.debug("Audio frame : time:%f, last:%s, size:%i, type:%i, target:%i, pos:%i", time.time(), str(terminator), size, type, target, pos-1)
 
             if size > 0 and self.receive_sound:  # if audio must be treated
                 try:
@@ -425,21 +425,21 @@ class Mumble(threading.Thread):
                                                                    target)  # add the sound to the user's sound queue
 
                     self.callbacks(PYMUMBLE_CLBK_SOUNDRECEIVED, self.users[session.value], newsound)
+
+                    sequence.value += int(round(newsound.duration / 1000 * 10))  # add 1 sequence per 10ms of audio
             
-                    self.Log.debug("Audio frame : time:%f last:%s, size:%i, uncompressed:%i, type:%i, target:%i",time.time(), str(terminator), size, newsound.size, type, target)
+                    self.Log.debug("Audio frame : time:%f last:%s, size:%i, uncompressed:%i, type:%i, target:%i", time.time(), str(terminator), size, newsound.size, type, target)
                 except CodecNotSupportedError as msg:
                     print msg
                 except KeyError:  # sound received after user removed
                     pass
-
-                sequence.value += int(round(newsound.duration / 1000 * 10))  # add 1 sequence per 10ms of audio 
 
 #            if len(message) - pos < size:
 #                raise InvalidFormatError("Invalid audio frame size")
             
             pos += size  # go further in the packet, after the audio frame
             
-#TODO: get position info
+# TODO: get position info
             
     def set_application_string(self, string):
         """Set the application name, that can be viewed by other clients on the server"""
@@ -451,7 +451,7 @@ class Mumble(threading.Thread):
         
     def get_loop_rate(self):
         """get the current main loop rate (pause per iteration)"""
-        return(self.loop_rate)
+        return self.loop_rate
 
     def set_receive_sound(self, value):
         """Enable or disable the management of incoming sounds"""
@@ -475,7 +475,7 @@ class Mumble(threading.Thread):
             lock.release()
 
         return lock
-#TODO: manage a timeout for blocking commands.  Currently, no command actually waits for the server to execute
+# TODO: manage a timeout for blocking commands.  Currently, no command actually waits for the server to execute
 #      The result of these commands should actually be checked against incoming server updates
         
     def treat_command(self, cmd):
@@ -512,9 +512,3 @@ class Mumble(threading.Thread):
             self.send_message(PYMUMBLE_MSG_TYPES_USERSTATE, userstate)
             cmd.response = True
             self.commands.answer(cmd)
-
-            
-            
-            
-            
-            

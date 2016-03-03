@@ -55,13 +55,13 @@ class SoundOutput:
                 self.sequence = 0
                 self.sequence_start_time = current_time
                 self.sequence_last_time = current_time
-            elif self.sequence_last_time + ( self.audio_per_packet * 2 ) <= current_time:  # give some slack (2*audio_per_frame) before interrupting a continuous sequence
+            elif self.sequence_last_time + (self.audio_per_packet * 2) <= current_time:  # give some slack (2*audio_per_frame) before interrupting a continuous sequence
                 # calculating sequence after a pause
                 self.sequence = int((current_time - self.sequence_start_time) / PYMUMBLE_SEQUENCE_DURATION)
-                self.sequence_last_time = self.sequence_start_time + ( self.sequence * PYMUMBLE_SEQUENCE_DURATION )
+                self.sequence_last_time = self.sequence_start_time + (self.sequence * PYMUMBLE_SEQUENCE_DURATION)
             else:  # continuous sound
                 self.sequence += int(self.audio_per_packet / PYMUMBLE_SEQUENCE_DURATION)
-                self.sequence_last_time = self.sequence_start_time + ( self.sequence * PYMUMBLE_SEQUENCE_DURATION )
+                self.sequence_last_time = self.sequence_start_time + (self.sequence * PYMUMBLE_SEQUENCE_DURATION)
                 
             payload = ""  # content of the whole packet, without tcptunnel header
             audio_encoded = 0  # audio time already in the packet
@@ -128,17 +128,17 @@ class SoundOutput:
     def _set_bandwidth(self):
         """do the calculation of the overhead and configure the actual bitrate for the codec"""
         if self.encoder:
-            overhead_per_packet = 20  #IP header in bytes
-            overhead_per_packet += ( 3 * int(self.audio_per_packet / self.encoder_framesize) )  # overhead per frame
+            overhead_per_packet = 20  # IP header in bytes
+            overhead_per_packet += (3 * int(self.audio_per_packet / self.encoder_framesize))  # overhead per frame
             if self.mumble_object.udp_active:
-                overhead_per_packet += 12  #UDP header
+                overhead_per_packet += 12  # UDP header
             else:
-                overhead_per_packet += 20  #TCP header
-                overhead_per_packet += 6  #TCPTunnel encapsulation
+                overhead_per_packet += 20  # TCP header
+                overhead_per_packet += 6  # TCPTunnel encapsulation
                 
             overhead_per_second = int(overhead_per_packet*8 / self.audio_per_packet)  # in bits 
             
-            self.Log.debug("Bandwidth is {bandwidth}, downgrading to {bitrate} due to the protocol overhead".format(bandwidth=self.bandwidth, bitrate = self.bandwidth-overhead_per_second))
+            self.Log.debug("Bandwidth is {bandwidth}, downgrading to {bitrate} due to the protocol overhead".format(bandwidth=self.bandwidth, bitrate=self.bandwidth-overhead_per_second))
             
             self.encoder.bitrate = self.bandwidth-overhead_per_second
         

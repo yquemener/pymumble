@@ -2,7 +2,8 @@
 from threading import Lock
 from collections import deque
 
-class Commands():
+
+class Commands:
     """
     Store to commands to be sent to the murmur server,
     from whatever tread.

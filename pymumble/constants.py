@@ -5,30 +5,30 @@ import sys
 
 PYMUMBLE_VERSION = "0.2.0"
 
-#============================================================================
+# ============================================================================
 # Tunable parameters
-#============================================================================
-PYMUMBLE_CONNECTION_RETRY_INTERVAL = 10 # in sec
-PYMUMBLE_AUDIO_PER_PACKET = float(20)/1000 # size of one audio packet in sec
-PYMUMBLE_BANDWIDTH = 50 * 1000 # total outgoing bitrate in bit/seconds
-PYMUMBLE_LOOP_RATE = 0.01 # pause done between two iteration of the main loop of the mumble thread, in sec
-                          # should be small enough to manage the audio output, so smaller than PYMUMBLE_AUDIO_PER_PACKET
+# ============================================================================
+PYMUMBLE_CONNECTION_RETRY_INTERVAL = 10  # in sec
+PYMUMBLE_AUDIO_PER_PACKET = float(20)/1000  # size of one audio packet in sec
+PYMUMBLE_BANDWIDTH = 50 * 1000  # total outgoing bitrate in bit/seconds
+PYMUMBLE_LOOP_RATE = 0.01  # pause done between two iteration of the main loop of the mumble thread, in sec
+                           # should be small enough to manage the audio output, so smaller than PYMUMBLE_AUDIO_PER_PACKET
 
-#============================================================================
+# ============================================================================
 # Constants
-#============================================================================
+# ============================================================================
 PYMUMBLE_PROTOCOL_VERSION = (1, 2, 4)
-PYMUMBLE_VERSION_STRING = "PyMumble %s" % (PYMUMBLE_VERSION)
-PYMUMBLE_OS_STRING = "PyMumble %s" % (PYMUMBLE_VERSION)
+PYMUMBLE_VERSION_STRING = "PyMumble %s" % PYMUMBLE_VERSION
+PYMUMBLE_OS_STRING = "PyMumble %s" % PYMUMBLE_VERSION
 PYMUMBLE_OS_VERSION_STRING = "Python %s - %s %s" % (sys.version, platform.system(), platform.release())
 
-PYMUMBLE_PING_DELAY = 10 # interval betwen 2 pings in sec
+PYMUMBLE_PING_DELAY = 10  # interval betwen 2 pings in sec
 
-PYMUMBLE_SAMPLERATE = 48000 # in hz
+PYMUMBLE_SAMPLERATE = 48000  # in hz
 
-PYMUMBLE_SEQUENCE_DURATION = float(10)/1000 #in sec
-PYMUMBLE_SEQUENCE_RESET_INTERVAL = 5 #in sec
-PYMUMBLE_READ_BUFFER_SIZE = 4096 # how much bytes to read at a time from the control socket, in bytes
+PYMUMBLE_SEQUENCE_DURATION = float(10)/1000  # in sec
+PYMUMBLE_SEQUENCE_RESET_INTERVAL = 5  # in sec
+PYMUMBLE_READ_BUFFER_SIZE = 4096  # how much bytes to read at a time from the control socket, in bytes
 
 # client connection state
 PYMUMBLE_CONN_STATE_NOT_CONNECTED = 0

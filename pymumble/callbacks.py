@@ -3,6 +3,7 @@
 from errors import UnknownCallbackError
 from constants import *
 
+
 class CallBacks(dict):
     """
     Define the callbacks that can be registered by the application.
@@ -12,8 +13,8 @@ class CallBacks(dict):
     keep processing short to avoid delays on audio transmission
     """
     def __init__(self):
-        self.update(
-            {PYMUMBLE_CLBK_CONNECTED: None,  # Connection succeeded
+        self.update({
+             PYMUMBLE_CLBK_CONNECTED: None,  # Connection succeeded
              PYMUMBLE_CLBK_CHANNELCREATED: None,  # send the created channel object as parameter
              PYMUMBLE_CLBK_CHANNELUPDATED: None,  # send the updated channel object and a dict with all the modified fields as parameter
              PYMUMBLE_CLBK_CHANNELREMOVED: None,  # send the removed channel object as parameter
@@ -22,7 +23,7 @@ class CallBacks(dict):
              PYMUMBLE_CLBK_USERREMOVED: None,  # send the removed user object and the mumble message as parameter
              PYMUMBLE_CLBK_SOUNDRECEIVED: None,  # send the user object that received the sound and the SoundChunk object itself
              PYMUMBLE_CLBK_TEXTMESSAGERECEIVED: None,  # Send the received message
-        } )      
+        })
             
     def set_callback(self, callback, dest):
         """Define the function to call for a specific callback.  Suppress any axisting callback function"""
@@ -82,6 +83,3 @@ class CallBacks(dict):
     def get_callbacks_list(self):
         """Get a list of all callbacks"""
         return self.keys()
-    
-    
-    

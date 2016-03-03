@@ -2,6 +2,7 @@
 from constants import *
 from threading import Lock
 
+
 class Cmd:
     """
     Define a command object, used to ask an action from the pymumble thread,
@@ -15,6 +16,7 @@ class Cmd:
         self.parameters = None
         self.response = None
 
+
 class MoveCmd(Cmd):
     """Command to move a user from channel"""
     def __init__(self, session, channel_id):
@@ -23,6 +25,7 @@ class MoveCmd(Cmd):
         self.cmd = PYMUMBLE_CMD_MOVE
         self.parameters = {"session": session,
                            "channel_id": channel_id}
+
 
 class ModUserState(Cmd):
     """Command to change a user state"""

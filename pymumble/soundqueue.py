@@ -8,7 +8,8 @@ import opuslib
 from constants import *
 from errors import CodecNotSupportedError
 
-class SoundQueue():
+
+class SoundQueue:
     """
     Per user storage of received audio frames
     Takes care of the decoding of the received audio
@@ -30,7 +31,6 @@ class SoundQueue():
                     PYMUMBLE_AUDIO_TYPE_OPUS: opuslib.Decoder(PYMUMBLE_SAMPLERATE, 1)
         }
 
-        
     def set_receive_sound(self, value):
         """Define if received sounds must be kept or discarded in this specific queue (user)"""
         if value:
@@ -47,34 +47,36 @@ class SoundQueue():
         
         try:
             pcm = self.decoders[type].decode(audio)
+
+            if not self.start_sequence or sequence <= self.start_sequence:
+                # New sequence started
+                self.start_time = time.time()
+                self.start_sequence = sequence
+                calculated_time = self.start_time
+            else:
+                # calculating position in current sequence
+                calculated_time = self.start_time + (sequence - self.start_sequence) * PYMUMBLE_SEQUENCE_DURATION
+
+            newsound = SoundChunk(pcm, sequence, len(pcm), calculated_time, type, target)
+            self.queue.appendleft(newsound)
+
+            if len(self.queue) > 1 and self.queue[0].time < self.queue[1].time:
+                # sort the audio chunk if it came out of order
+                cpt = 0
+                while cpt < len(self.queue) - 1 and self.queue[cpt].time < self.queue[cpt+1].time:
+                    tmp = self.queue[cpt+1]
+                    self.queue[cpt+1] = self.queue[cpt]
+                    self.queue[cpt] = tmp
+
+            self.lock.release()
+            return newsound
         except KeyError:
+            self.lock.release()
             self.mumble_object.Log.error("Codec not supported (audio packet type {0})".format(type))
         except Exception as e:
+            self.lock.release()
             self.mumble_object.Log.error("error while decoding audio. sequence:{seq}, type:{type}. {error}".format(seq=sequence, type=type, error=str(e)))
-        
-        if not self.start_sequence or sequence <= self.start_sequence:
-            # New sequence started
-            self.start_time = time.time()
-            self.start_sequence = sequence
-            calculated_time = self.start_time
-        else:
-            # calculating position in current sequence
-            calculated_time = self.start_time + (sequence - self.start_sequence) * PYMUMBLE_SEQUENCE_DURATION  
-        
-        newsound = SoundChunk(pcm, sequence, len(pcm), calculated_time, type, target)
-        self.queue.appendleft(newsound)
-        
-        if len(self.queue) > 1 and self.queue[0].time < self.queue[1].time:
-            # sort the audio chunk if it came out of order
-            cpt = 0
-            while cpt < len(self.queue) - 1 and self.queue[cpt].time < self.queue[cpt+1].time:
-                tmp = self.queue[cpt+1]
-                self.queue[cpt+1] = self.queue[cpt]
-                self.queue[cpt] = tmp
-        
-        self.lock.release()
-        return newsound
-    
+
     def is_sound(self):
         """Boolean to check if there is a sound frame in the queue"""
         if len(self.queue) > 0:
@@ -95,7 +97,7 @@ class SoundQueue():
             result = None
 
         self.lock.release()
-        return(result)
+        return result
     
     def first_sound(self):
         """Return the first sound of the queue, but keep it"""
@@ -105,7 +107,7 @@ class SoundQueue():
             return None
         
 
-class SoundChunk():
+class SoundChunk:
     """
     Object that contains the actual audio frame, in PCM format"""    
     def __init__(self, pcm, sequence, size, calculated_time, type, target, timestamp=time.time()):
@@ -136,5 +138,4 @@ class SoundChunk():
         self.time += duration
         self.size -= size
         
-        return(result)
-    
+        return result

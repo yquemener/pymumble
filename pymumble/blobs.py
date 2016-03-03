@@ -4,6 +4,7 @@ import struct
 from constants import *
 from mumble_pb2 import RequestBlob
 
+
 class Blobs(dict):
     """
     Manage the Blob library
@@ -39,5 +40,3 @@ class Blobs(dict):
         request.channel_description.extend(struct.unpack("!5I", hash))
         
         self.mumble_object.send_message(PYMUMBLE_MSG_TYPES_REQUESTBLOB, request)
-
-        

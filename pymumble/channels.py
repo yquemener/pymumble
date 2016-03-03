@@ -4,6 +4,7 @@ from threading import Lock
 from errors import UnknownChannelError
 import messages
 
+
 class Channels(dict):
     """
     Object that Stores all channels and their properties.
@@ -41,15 +42,15 @@ class Channels(dict):
     def find_by_tree(self, tree):
         """Find a channel by its full path (a list with an element for each leaf)"""
         if not getattr(tree, '__iter__', False):
-            tree = (tree)  # function use argument as a list
+            tree = tree  # function use argument as a list
 
-        current=self[0]
+        current = self[0]
         
         for name in tree:  # going up the tree
+            found = False
             for subchannel in self.get_childs(current).itervalues():
-                found = False
                 if subchannel["name"] == name:
-                    current=subchannel
+                    current = subchannel
                     found = True
                     break
             
@@ -80,7 +81,7 @@ class Channels(dict):
     
     def get_tree(self, channel):
         """Get the whole list of channels, in a multidimensionnal list""" 
-        tree= list()
+        tree = list()
         
         current = channel
         
@@ -104,6 +105,7 @@ class Channels(dict):
         err = "Channel %s does not exists" % name
         raise UnknownChannelError(err)
         
+
 class Channel(dict):
     """
     Stores informations about one specific channel
@@ -129,7 +131,7 @@ class Channel(dict):
             else:
                 self.mumble_object.blobs.get_channel_description(message.description_hash)
         
-        return(actions)  # return a dict with updates performed, useful for the callback functions
+        return actions  # return a dict with updates performed, useful for the callback functions
 
     def update_field(self, name, field):
         """Update one value"""
@@ -138,17 +140,17 @@ class Channel(dict):
             self[name] = field
             actions[name] = field
             
-        return(actions)  # return a dict with updates performed, useful for the callback functions
+        return actions  # return a dict with updates performed, useful for the callback functions
     
     def get_property(self, property):
         if property in self:
-            return(self[property])
+            return self[property]
         else:
             return None
         
     def move_in(self, session=None):
         """Ask to move a session in a specific channel.  By default move pymumble own session"""
-        if session == None:
+        if session is None:
             session = self.mumble_object.users.myself_session
         
         cmd = messages.MoveCmd(session, self["channel_id"])

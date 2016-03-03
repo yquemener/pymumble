@@ -4,6 +4,7 @@ from threading import Lock
 import soundqueue
 import messages
 
+
 class Users(dict):
     """Object that stores and update all connected users"""
     def __init__(self, mumble_object, callbacks):
@@ -22,7 +23,7 @@ class Users(dict):
             self[message.session] = User(self.mumble_object, message)
             self.callbacks(PYMUMBLE_CLBK_USERCREATED, self[message.session])
             if message.session == self.myself_session:
-                self.myself == self[message.session]
+                self.myself = self[message.session]
         else:
             actions = self[message.session].update(message)
             self.callbacks(PYMUMBLE_CLBK_USERUPDATED, self[message.session], actions)
@@ -83,7 +84,7 @@ class User(dict):
             else:
                 self.mumble_object.blobs.get_user_texture(message.texture_hash)
                     
-        return(actions)  # return a dict, useful for the callback functions
+        return actions  # return a dict, useful for the callback functions
                 
     def update_field(self, name, field):
         """Update one state value for a user"""
@@ -92,11 +93,11 @@ class User(dict):
             self[name] = field
             actions[name] = field
             
-        return(actions)
+        return actions
     
     def get_property(self, property):
         if property in self:
-            return(self[property])
+            return self[property]
         else:
             return None
         
