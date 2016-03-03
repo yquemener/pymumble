@@ -289,4 +289,3 @@ message RequestBlob {
 	repeated uint32 session_comment = 2;
 	repeated uint32 channel_description = 3;
 }
-

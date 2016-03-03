@@ -167,7 +167,6 @@ class SoundOutput:
         
         if self.codec.opus:
             self.encoder = opuslib.Encoder(PYMUMBLE_SAMPLERATE, 1, 'voip')
-            self.encoder.vbr = False
             self.encoder_framesize = self.audio_per_packet
             self.codec_type = PYMUMBLE_AUDIO_TYPE_OPUS
         else:

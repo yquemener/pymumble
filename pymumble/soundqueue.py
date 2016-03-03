@@ -6,7 +6,6 @@ from collections import deque
 import opuslib
 
 from constants import *
-from errors import CodecNotSupportedError
 
 
 class SoundQueue:
@@ -46,7 +45,7 @@ class SoundQueue:
         self.lock.acquire()
         
         try:
-            pcm = self.decoders[type].decode(audio)
+            pcm = self.decoders[type].decode(audio, PYMUMBLE_AUDIO_PER_PACKET)
 
             if not self.start_sequence or sequence <= self.start_sequence:
                 # New sequence started
