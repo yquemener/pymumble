@@ -26,7 +26,7 @@ class Mumble(threading.Thread):
     Mumble client library main object.
     basically a thread
     """
-    def __init__(self, host=None, port=None, user=None, password=None, client_certif=None, private_key=None, reconnect=False, debug=False):
+    def __init__(self, host, user, port=64738, password='', client_certif=None, private_key=None, reconnect=False, debug=False):
         """
         host=mumble server hostname or address
         port=mumble server port
@@ -124,25 +124,25 @@ class Mumble(threading.Thread):
             self.control_socket = ssl.wrap_socket(std_sock, certfile=self.client_certif, keyfile=self.private_key, ssl_version=ssl.PROTOCOL_TLSv1)
             self.control_socket.connect((self.host, self.port))
             self.control_socket.setblocking(0)
+        
+            # Perform the Mumble authentication
+            version = mumble_pb2.Version()
+            version.version = (PYMUMBLE_PROTOCOL_VERSION[0] << 16) + (PYMUMBLE_PROTOCOL_VERSION[1] << 8) + PYMUMBLE_PROTOCOL_VERSION[2]
+            version.release = self.application
+            version.os = PYMUMBLE_OS_STRING
+            version.os_version = PYMUMBLE_OS_VERSION_STRING
+            self.Log.debug("sending: version: %s", version)
+            self.send_message(PYMUMBLE_MSG_TYPES_VERSION, version)
+
+            authenticate = mumble_pb2.Authenticate()
+            authenticate.username = self.user
+            authenticate.password = self.password
+            authenticate.opus = True
+            self.Log.debug("sending: authenticate: %s", authenticate)
+            self.send_message(PYMUMBLE_MSG_TYPES_AUTHENTICATE, authenticate)
         except Exception:
             self.connected = PYMUMBLE_CONN_STATE_FAILED
             return self.connected
-        
-        # Perform the Mumble authentication
-        version = mumble_pb2.Version()
-        version.version = (PYMUMBLE_PROTOCOL_VERSION[0] << 16) + (PYMUMBLE_PROTOCOL_VERSION[1] << 8) + PYMUMBLE_PROTOCOL_VERSION[2]
-        version.release = self.application
-        version.os = PYMUMBLE_OS_STRING
-        version.os_version = PYMUMBLE_OS_VERSION_STRING
-        self.Log.debug("sending: version: %s", version)
-        self.send_message(PYMUMBLE_MSG_TYPES_VERSION, version)
-        
-        authenticate = mumble_pb2.Authenticate()
-        authenticate.username = self.user
-        authenticate.password = self.password
-        authenticate.opus = True
-        self.Log.debug("sending: authenticate: %s", authenticate)
-        self.send_message(PYMUMBLE_MSG_TYPES_AUTHENTICATE, authenticate)
         
         self.connected = PYMUMBLE_CONN_STATE_AUTHENTICATING
         return self.connected
