@@ -9,6 +9,7 @@ import struct
 
 from errors import *
 from constants import *
+from ssl import SSLError
 import users
 import channels
 import blobs
@@ -25,17 +26,17 @@ class Mumble(threading.Thread):
     Mumble client library main object.
     basically a thread
     """
-    def __init__(self, host=None, port=None, user=None, password=None, client_certif=None, reconnect=False, debug=False):
+    def __init__(self, host=None, port=None, user=None, password=None, client_certif=None, private_key=None, reconnect=False, debug=False):
         """
         host=mumble server hostname or address
         port=mumble server port
         user=user to use for the connection
         password=password for the connection
-        client_certif=client certificate to authenticate the connection (NOT IMPLEMENTED)
+        client_certif=client certificate to authenticate the connection
+        private_key=private key comming with client certificate
         reconnect=if True, try to reconnect if disconnected
         debug=if True, send debugging messages (lot of...) to the stdout
         """
-# TODO: client certificate authentication
 # TODO: exit both threads properly
 # TODO: use UDP audio
         threading.Thread.__init__(self)
@@ -60,6 +61,7 @@ class Mumble(threading.Thread):
         self.user = user
         self.password = password
         self.client_certif = client_certif
+        self.private_key = private_key
         self.reconnect = reconnect
         
         self.receive_sound = False  # set to True to treat incoming audio, otherwise it is simply ignored
@@ -116,7 +118,7 @@ class Mumble(threading.Thread):
         # Connect the SSL tunnel
         self.Log.debug("connecting to %s on port %i.", self.host, self.port)
         std_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.control_socket = ssl.wrap_socket(std_sock, certfile=self.client_certif, ssl_version=ssl.PROTOCOL_TLSv1)
+        self.control_socket = ssl.wrap_socket(std_sock, certfile=self.client_certif, keyfile=self.private_key, ssl_version=ssl.PROTOCOL_TLSv1)
 
         self.control_socket.connect((self.host, self.port))
         
@@ -134,7 +136,6 @@ class Mumble(threading.Thread):
         authenticate = mumble_pb2.Authenticate()
         authenticate.username = self.user
         authenticate.password = self.password
-#        authenticate.celt_versions.extend([-2147483637])  # for debugging - only celt 0.7
         authenticate.opus = True
         self.Log.debug("sending: authenticate: %s", authenticate)
         self.send_message(PYMUMBLE_MSG_TYPES_AUTHENTICATE, authenticate)
@@ -195,9 +196,12 @@ class Mumble(threading.Thread):
             
     def read_control_messages(self):
         """Read control messages coming from the server"""
-#        from tools import toHex  # for debugging
-        
-        buffer = self.control_socket.recv(PYMUMBLE_READ_BUFFER_SIZE)
+#        from tools import tohex  # for debugging
+
+        try:
+            buffer = self.control_socket.recv(PYMUMBLE_READ_BUFFER_SIZE)
+        except SSLError:
+            buffer = ""
         self.receive_buffer += buffer
 
         while len(self.receive_buffer) >= 6:  # header is present (type + length)
@@ -208,7 +212,7 @@ class Mumble(threading.Thread):
             if len(self.receive_buffer) < size+6:  # if not length data, read further
                 break
             
-#            self.Log.debug("message received : " + toHex(self.receive_buffer[0:size+6]))  # for debugging
+#            self.Log.debug("message received : " + tohex(self.receive_buffer[0:size+6]))  # for debugging
             
             message = self.receive_buffer[6:size+6]  # get the control message
             self.receive_buffer = self.receive_buffer[size+6:]  # remove from the buffer the read part
@@ -294,7 +298,7 @@ class Mumble(threading.Thread):
             mess.ParseFromString(message)
             self.Log.debug("message: TextMessage : %s", mess)
 
-            self.callbacks(PYMUMBLE_CLBK_TEXTMESSAGERECEIVED, mess.message)
+            self.callbacks(PYMUMBLE_CLBK_TEXTMESSAGERECEIVED, mess)
             
         elif type == PYMUMBLE_MSG_TYPES_PERMISSIONDENIED:
             mess = mumble_pb2.PermissionDenied()
@@ -364,7 +368,7 @@ class Mumble(threading.Thread):
             self.Log.debug("message: ServerConfig : %s", mess)        
 
     def set_bandwidth(self, bandwidth):
-        """set the total allowed outgoing bandwidth"""
+        """Set the total allowed outgoing bandwidth"""
         if self.server_max_bandwidth is not None and bandwidth > self.server_max_bandwidth:
             self.bandwidth = self.server_max_bandwidth
         else: 
@@ -374,11 +378,11 @@ class Mumble(threading.Thread):
     
     def sound_received(self, message):
         """Manage a received sound message"""
-#        from tools import toHex  # for debugging
+#        from tools import tohex  # for debugging
 
         pos = 0
         
-#        self.Log.debug("sound packet : " + toHex(message))  # for debugging
+#        self.Log.debug("sound packet : " + tohex(message))  # for debugging
                 
         (header, ) = struct.unpack("!B", message[pos])  # extract the header
         type = (header & 0b11100000) >> 5
@@ -446,11 +450,11 @@ class Mumble(threading.Thread):
         self.application = string
 
     def set_loop_rate(self, rate):
-        """set the current main loop rate (pause per iteration)"""
+        """Set the current main loop rate (pause per iteration)"""
         self.loop_rate = rate
         
     def get_loop_rate(self):
-        """get the current main loop rate (pause per iteration)"""
+        """Get the current main loop rate (pause per iteration)"""
         return self.loop_rate
 
     def set_receive_sound(self, value):
