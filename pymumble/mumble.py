@@ -205,9 +205,9 @@ class Mumble(threading.Thread):
 
         try:
             buffer = self.control_socket.recv(PYMUMBLE_READ_BUFFER_SIZE)
+            self.receive_buffer += buffer
         except SSLError:
-            buffer = ""
-        self.receive_buffer += buffer
+            pass
 
         while len(self.receive_buffer) >= 6:  # header is present (type + length)
             self.Log.debug("read control connection")
@@ -476,7 +476,7 @@ class Mumble(threading.Thread):
         self.ready_lock.release()
         
     def execute_command(self, cmd, blocking=True):
-        """Create a command to be sent to the server.  To be userd in the main thread"""
+        """Create a command to be sent to the server.  To be used in the main thread"""
         self.is_ready()
         
         lock = self.commands.new_cmd(cmd)
