@@ -2,7 +2,7 @@ import setuptools
 
 setuptools.setup(
     name="pymumble",
-    version='0.0.1',
+    version='0.2.1',
     author='Robert Hendrickx',
     author_email='rober@percu.be',
     maintainer='Antonin Auroy',
