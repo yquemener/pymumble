@@ -9,7 +9,6 @@ import struct
 
 from errors import *
 from constants import *
-from ssl import SSLError
 import users
 import channels
 import blobs
@@ -140,9 +139,6 @@ class Mumble(threading.Thread):
             authenticate.opus = True
             self.Log.debug("sending: authenticate: %s", authenticate)
             self.send_message(PYMUMBLE_MSG_TYPES_AUTHENTICATE, authenticate)
-        except SSLError:
-            self.connected = PYMUMBLE_CONN_STATE_FAILED
-            return self.connected
         except socket.error:
             self.connected = PYMUMBLE_CONN_STATE_FAILED
             return self.connected
@@ -209,7 +205,7 @@ class Mumble(threading.Thread):
         try:
             buffer = self.control_socket.recv(PYMUMBLE_READ_BUFFER_SIZE)
             self.receive_buffer += buffer
-        except SSLError:
+        except socket.error:
             pass
 
         while len(self.receive_buffer) >= 6:  # header is present (type + length)
