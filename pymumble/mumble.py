@@ -140,7 +140,10 @@ class Mumble(threading.Thread):
             authenticate.opus = True
             self.Log.debug("sending: authenticate: %s", authenticate)
             self.send_message(PYMUMBLE_MSG_TYPES_AUTHENTICATE, authenticate)
-        except Exception:
+        except SSLError:
+            self.connected = PYMUMBLE_CONN_STATE_FAILED
+            return self.connected
+        except socket.error:
             self.connected = PYMUMBLE_CONN_STATE_FAILED
             return self.connected
         

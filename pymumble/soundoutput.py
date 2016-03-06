@@ -173,7 +173,7 @@ class SoundOutput:
             self.encoder_framesize = self.audio_per_packet
             self.codec_type = PYMUMBLE_AUDIO_TYPE_OPUS
         else:
-            raise CodecNotSupportedError()
+            raise CodecNotSupportedError('')
 
         self._set_bandwidth()
 
