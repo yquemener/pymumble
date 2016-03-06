@@ -1,5 +1,4 @@
 * UDP for audio streams (currently only on tcp tunnel)
-* Certificate authentication (currently only user/password)
 * manage ping counters
 * lot of features not implemented
     - user management
