@@ -212,6 +212,10 @@ class Mumble(threading.Thread):
         while len(self.receive_buffer) >= 6:  # header is present (type + length)
             self.Log.debug("read control connection")
             header = self.receive_buffer[0:6]
+
+            if len(header) < 6:
+                break
+
             (type, size) = struct.unpack("!HL", header)  # decode header
 
             if len(self.receive_buffer) < size+6:  # if not length data, read further
