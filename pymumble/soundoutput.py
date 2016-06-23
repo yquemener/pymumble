@@ -161,7 +161,12 @@ class SoundOutput:
         for i in range(initial_offset, len(pcm), samples):
             self.pcm.append(pcm[i:i+samples])
         self.lock.release()
-        
+
+    def clear_buffer(self):
+        self.lock.acquire()
+        self.pcm = []
+        self.lock.release()
+
     def get_buffer_size(self):
         """return the size of the unsent buffer in sec"""
         return sum(len(chunk) for chunk in self.pcm) / 2. / PYMUMBLE_SAMPLERATE
