@@ -104,8 +104,11 @@ class Mumble(threading.Thread):
             if self.connect() >= PYMUMBLE_CONN_STATE_FAILED:  # some error occured, exit here
                 self.ready_lock.release()
                 break
-            
-            self.loop()
+
+            try:
+                self.loop()
+            except socket.error:
+                self.connected = PYMUMBLE_CONN_STATE_NOT_CONNECTED
         
             if not self.reconnect or not self.parent_thread.is_alive():
                 break
@@ -328,6 +331,7 @@ class Mumble(threading.Thread):
             mess = mumble_pb2.CryptSetup()
             mess.ParseFromString(message)
             self.Log.debug("message: CryptSetup : %s", mess)
+            self.ping()
             
         elif type == PYMUMBLE_MSG_TYPES_CONTEXTACTIONADD:
             mess = mumble_pb2.ContextActionAdd()
