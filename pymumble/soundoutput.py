@@ -71,8 +71,11 @@ class SoundOutput:
 
                 if len(to_encode) != samples:  # pad to_encode if needed to match sample length
                     to_encode += '\x00'*(samples-len(to_encode))
-                
-                encoded = self.encoder.encode(to_encode, len(to_encode)/2)
+
+                try:
+                    encoded = self.encoder.encode(to_encode, len(to_encode)/2)
+                except opuslib.exceptions.OpusError:
+                    encoded = b''
                          
                 audio_encoded += self.encoder_framesize
                 
