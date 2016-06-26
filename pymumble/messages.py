@@ -35,6 +35,7 @@ class TextMessage(Cmd):
         self.parameters = {"session": session,
                            "channel_id": channel_id,
                            "message": message}
+
 class TextPrivateMessage(Cmd):
     """Command to send a private text message"""
     def __init__(self, session, message):
