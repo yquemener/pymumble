@@ -31,8 +31,8 @@ class Mumble(threading.Thread):
         port=mumble server port
         user=user to use for the connection
         password=password for the connection
-        client_certif=client certificate to authenticate the connection
-        private_key=private key comming with client certificate
+        certfile=client certificate to authenticate the connection
+        keyfile=private key comming with client certificate
         reconnect=if True, try to reconnect if disconnected
         debug=if True, send debugging messages (lot of...) to the stdout
         """
