@@ -26,6 +26,23 @@ class MoveCmd(Cmd):
         self.parameters = {"session": session,
                            "channel_id": channel_id}
 
+class TextMessage(Cmd):
+    """Command to send a text message"""
+    def __init__(self, session, channel_id, message):
+        Cmd.__init__(self)
+
+        self.cmd = PYMUMBLE_CMD_TEXTMESSAGE
+        self.parameters = {"session": session,
+                           "channel_id": channel_id,
+                           "message": message}
+class TextPrivateMessage(Cmd):
+    """Command to send a private text message"""
+    def __init__(self, session, message):
+        Cmd.__init__(self)
+
+        self.cmd = PYMUMBLE_CMD_TEXTPRIVATEMESSAGE
+        self.parameters = {"session": session,
+                           "message": message}
 
 class ModUserState(Cmd):
     """Command to change a user state"""
