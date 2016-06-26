@@ -47,6 +47,8 @@ class SoundOutput:
         if not self.encoder or len(self.pcm) == 0:  # no codec configured or no audio sent
             return()
 
+        samples = int(self.encoder_framesize * PYMUMBLE_SAMPLERATE * 2)  # number of samples in an encoder frame
+
         while len(self.pcm) > 0 and self.sequence_last_time + self.audio_per_packet <= time():  # audio to send and time to send it (since last packet)
             current_time = time()
             if self.sequence_last_time + PYMUMBLE_SEQUENCE_RESET_INTERVAL <= current_time:  # waited enough, resetting sequence to 0

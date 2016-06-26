@@ -25,7 +25,7 @@ class Mumble(threading.Thread):
     Mumble client library main object.
     basically a thread
     """
-    def __init__(self, host, user, port=64738, password='', client_certif=None, private_key=None, reconnect=False, debug=False):
+    def __init__(self, host, user, port=64738, password='', certfile=None, keyfile=None, reconnect=False, debug=False):
         """
         host=mumble server hostname or address
         port=mumble server port
@@ -58,8 +58,8 @@ class Mumble(threading.Thread):
         self.port = port
         self.user = user
         self.password = password
-        self.client_certif = client_certif
-        self.private_key = private_key
+        self.certfile = certfile
+        self.keyfile = keyfile
         self.reconnect = reconnect
         
         self.receive_sound = False  # set to True to treat incoming audio, otherwise it is simply ignored
@@ -123,7 +123,7 @@ class Mumble(threading.Thread):
         std_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
         try:
-            self.control_socket = ssl.wrap_socket(std_sock, certfile=self.client_certif, keyfile=self.private_key, ssl_version=ssl.PROTOCOL_TLSv1)
+            self.control_socket = ssl.wrap_socket(std_sock, certfile=self.certfile, keyfile=self.keyfile, ssl_version=ssl.PROTOCOL_TLSv1)
             self.control_socket.connect((self.host, self.port))
             self.control_socket.setblocking(0)
         
