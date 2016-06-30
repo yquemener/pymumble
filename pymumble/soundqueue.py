@@ -46,6 +46,12 @@ class SoundQueue:
         
         try:
             pcm = self.decoders[type].decode(audio, PYMUMBLE_AUDIO_PER_PACKET)
+        except KeyError:
+            self.lock.release()
+            self.mumble_object.Log.error("Codec not supported (audio packet type {0})".format(type))
+        except Exception as e:
+            self.lock.release()
+            self.mumble_object.Log.error("error while decoding audio. sequence:{seq}, type:{type}. {error}".format(seq=sequence, type=type, error=str(e)))
 
             if not self.start_sequence or sequence <= self.start_sequence:
                 # New sequence started
@@ -69,12 +75,6 @@ class SoundQueue:
 
             self.lock.release()
             return newsound
-        except KeyError:
-            self.lock.release()
-            self.mumble_object.Log.error("Codec not supported (audio packet type {0})".format(type))
-        except Exception as e:
-            self.lock.release()
-            self.mumble_object.Log.error("error while decoding audio. sequence:{seq}, type:{type}. {error}".format(seq=sequence, type=type, error=str(e)))
 
     def is_sound(self):
         """Boolean to check if there is a sound frame in the queue"""
