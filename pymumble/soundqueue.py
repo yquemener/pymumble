@@ -45,7 +45,7 @@ class SoundQueue:
         self.lock.acquire()
         
         try:
-            pcm = self.decoders[type].decode(audio, PYMUMBLE_AUDIO_PER_PACKET)
+            pcm = self.decoders[type].decode(audio, PYMUMBLE_READ_BUFFER_SIZE)
 
             if not self.start_sequence or sequence <= self.start_sequence:
                 # New sequence started
