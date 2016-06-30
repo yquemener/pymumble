@@ -84,3 +84,5 @@ PYMUMBLE_AUDIO_TYPE_OPUS = 4
 # command names
 PYMUMBLE_CMD_MOVE = "move"
 PYMUMBLE_CMD_MODUSERSTATE = "update_user"
+PYMUMBLE_CMD_TEXTMESSAGE = "text_message"
+PYMUMBLE_CMD_TEXTPRIVATEMESSAGE = "text_private_message"
