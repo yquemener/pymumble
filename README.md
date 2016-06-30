@@ -4,10 +4,10 @@ PYMUMBLE python library
 Description
 -----------
 
-This library is a fork from https://github.com/Robert904/pymumble. I dropped CELT support and replaced the pyopus Cython
-package with opuslib.
+This library is a fork of a fork of a fork (initial from https://github.com/Robert904/pymumble). But we will try to make pymumble better. So i consider this fork (the [@Xefir](https://github.com/Xefir/pymumble) or [@Azlux](https://github.com/azlux/pymumble) one) the current fork alive of pymumble.
 
-For a client application example, you can check https://github.com/Robert904/mumblerecbot
+
+For a client application example, you can check https://github.com/azlux/MumbleRadioPlayer or https://github.com/Robert904/mumblerecbot
 
 Status
 ------
@@ -17,7 +17,7 @@ Status
 - Set properties for users (mute, comments, etc.) and go to a specific channel
 - Callback mechanism to react on server events
 - Manage the blobs (images, long comments, etc.)
-- Handle text messages
+- Can send text messages to user and channel
 
 ### What is missing:
 - UDP media.  Currently it works only in TCP tunneling mode (the standard fallback of mumble when UDP is not working)
@@ -42,6 +42,12 @@ Requirements/installation
 -------------------------
 It seems to work fine on Python 2.6 and 2.7.
 I have used it on both Windows and Linux
+
+Thanks
+-----------
+to [@raylu](https://github.com/raylu) for making pymumble speak into channel
+to [@schlarpc](https://github.com/schlarpc) for fixing buffer issues
+
 
 License
 -------
