@@ -45,36 +45,36 @@ class SoundQueue:
         self.lock.acquire()
         
         try:
-            pcm = self.decoders[type].decode(audio, PYMUMBLE_AUDIO_PER_PACKET)
+            pcm = self.decoders[type].decode_float(audio, PYMUMBLE_AUDIO_PER_PACKET)
+
+            if not self.start_sequence or sequence <= self.start_sequence:
+                # New sequence started
+                self.start_time = time.time()
+                self.start_sequence = sequence
+                calculated_time = self.start_time
+            else:
+                # calculating position in current sequence
+                calculated_time = self.start_time + (sequence - self.start_sequence) * PYMUMBLE_SEQUENCE_DURATION
+
+            newsound = SoundChunk(pcm, sequence, len(pcm), calculated_time, type, target)
+            self.queue.appendleft(newsound)
+
+            if len(self.queue) > 1 and self.queue[0].time < self.queue[1].time:
+                # sort the audio chunk if it came out of order
+                cpt = 0
+                while cpt < len(self.queue) - 1 and self.queue[cpt].time < self.queue[cpt+1].time:
+                    tmp = self.queue[cpt+1]
+                    self.queue[cpt+1] = self.queue[cpt]
+                    self.queue[cpt] = tmp
+
+            self.lock.release()
+            return newsound
         except KeyError:
             self.lock.release()
             self.mumble_object.Log.error("Codec not supported (audio packet type {0})".format(type))
         except Exception as e:
             self.lock.release()
             self.mumble_object.Log.error("error while decoding audio. sequence:{seq}, type:{type}. {error}".format(seq=sequence, type=type, error=str(e)))
-
-        if not self.start_sequence or sequence <= self.start_sequence:
-            # New sequence started
-            self.start_time = time.time()
-            self.start_sequence = sequence
-            calculated_time = self.start_time
-        else:
-            # calculating position in current sequence
-            calculated_time = self.start_time + (sequence - self.start_sequence) * PYMUMBLE_SEQUENCE_DURATION
-
-        newsound = SoundChunk(pcm, sequence, len(pcm), calculated_time, type, target)
-        self.queue.appendleft(newsound)
-
-        if len(self.queue) > 1 and self.queue[0].time < self.queue[1].time:
-            # sort the audio chunk if it came out of order
-            cpt = 0
-            while cpt < len(self.queue) - 1 and self.queue[cpt].time < self.queue[cpt+1].time:
-                tmp = self.queue[cpt+1]
-                self.queue[cpt+1] = self.queue[cpt]
-                self.queue[cpt] = tmp
-
-        self.lock.release()
-        return newsound
 
     def is_sound(self):
         """Boolean to check if there is a sound frame in the queue"""
