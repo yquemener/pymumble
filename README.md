@@ -45,8 +45,8 @@ I have used it on both Windows and Linux
 
 Thanks
 -----------
-to [@raylu](https://github.com/raylu) for making pymumble speak into channel
-to [@schlarpc](https://github.com/schlarpc) for fixing buffer issues
+- [@raylu](https://github.com/raylu) for making pymumble speak into channels
+- [@schlarpc](https://github.com/schlarpc) for fixes on buffer
 
 
 License
