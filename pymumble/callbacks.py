@@ -2,6 +2,7 @@
 
 from errors import UnknownCallbackError
 from constants import *
+import threading
 
 
 class CallBacks(dict):
@@ -74,7 +75,11 @@ class CallBacks(dict):
         
         if self[callback]:
             for func in self[callback]:
-                func(*pos_parameters)
+                if callback is PYMUMBLE_CLBK_TEXTMESSAGERECEIVED:
+                    thr = threading.Thread(target=func, args=pos_parameters)
+                    thr.start()
+                else:
+                    func(*pos_parameters)
     
     def __call__(self, callback, *pos_parameters):
         """shortcut to be able to call the dict element as a function"""
