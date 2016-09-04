@@ -25,7 +25,7 @@ class Mumble(threading.Thread):
     Mumble client library main object.
     basically a thread
     """
-    def __init__(self, host, user, port=64738, password='', certfile=None, keyfile=None, reconnect=False, debug=False):
+    def __init__(self, host, user, port=64738, password='', certfile=None, keyfile=None, reconnect=False, tokens=[], debug=False):
         """
         host=mumble server hostname or address
         port=mumble server port
@@ -34,6 +34,7 @@ class Mumble(threading.Thread):
         certfile=client certificate to authenticate the connection
         keyfile=private key comming with client certificate
         reconnect=if True, try to reconnect if disconnected
+        tokens=channel access tokens as a list of strings
         debug=if True, send debugging messages (lot of...) to the stdout
         """
 # TODO: use UDP audio
@@ -61,6 +62,7 @@ class Mumble(threading.Thread):
         self.certfile = certfile
         self.keyfile = keyfile
         self.reconnect = reconnect
+        self.tokens = tokens
         
         self.receive_sound = False  # set to True to treat incoming audio, otherwise it is simply ignored
         
@@ -139,6 +141,7 @@ class Mumble(threading.Thread):
             authenticate = mumble_pb2.Authenticate()
             authenticate.username = self.user
             authenticate.password = self.password
+            authenticate.tokens.extend(self.tokens)
             authenticate.opus = True
             self.Log.debug("sending: authenticate: %s", authenticate)
             self.send_message(PYMUMBLE_MSG_TYPES_AUTHENTICATE, authenticate)
