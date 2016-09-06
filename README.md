@@ -6,6 +6,7 @@ Description
 
 This library is a fork of a fork of a fork (initial from https://github.com/Robert904/pymumble). But we will try to make pymumble better. So i consider this fork (the [@Azlux](https://github.com/azlux/pymumble) one) the current fork alive of pymumble.
 
+The wiki/API explanation is [HERE](API.md)
 
 For a client application example, you can check https://github.com/azlux/MumbleRadioPlayer or https://github.com/Robert904/mumblerecbot
 
@@ -26,7 +27,6 @@ Status
 - Audio targets (whisper, etc.) is not managed in outgoing audio, and has very basic support in incoming
 - ping statistics
 - Probably a lot of other small features
-- polishing ?
 
 Architecture
 ------------
@@ -42,6 +42,8 @@ Requirements/installation
 -------------------------
 It seems to work fine on Python 2.6 and 2.7.
 I have used it on both Windows and Linux
+
+Check the setup.py to know the versions of opuslib and protobuf needed
 
 Thanks
 -----------

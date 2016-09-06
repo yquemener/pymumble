@@ -1,10 +1,12 @@
 API
 ===
 ## main Mumble object 
-> class Mumble(host, port, user, password, client_certif=None, reconnect=False, debug=False)
+> class Mumble(host, user, port=64738, password='', certfile=None, keyfile=None, reconnect=False, tokens=[], debug=False)
 
 it should be quite straightforward.  debug=True will generate a LOT of stdout messages...  otherwise it should be silent in normal conditions
 reconnect should allow the library to reconnect automatically if the server disconnect it
+
+The `tokens` parameter is a list of tokens for the channels access tokens
   
 > Mumble.start()
 
