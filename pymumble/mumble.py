@@ -225,6 +225,7 @@ class Mumble(threading.Thread):
 
     def read_control_messages(self):
         """Read control messages coming from the server"""
+        # from tools import tohex  # for debugging
 
         try:
             buffer = self.control_socket.recv(PYMUMBLE_READ_BUFFER_SIZE)
@@ -244,6 +245,7 @@ class Mumble(threading.Thread):
             if len(self.receive_buffer) < size+6:  # if not length data, read further
                 break
 
+            # self.Log.debug("message received : " + tohex(self.receive_buffer[0:size+6]))  # for debugging
 
             message = self.receive_buffer[6:size+6]  # get the control message
             self.receive_buffer = self.receive_buffer[size+6:]  # remove from the buffer the read part
@@ -412,9 +414,11 @@ class Mumble(threading.Thread):
 
     def sound_received(self, message):
         """Manage a received sound message"""
+        # from tools import tohex  # for debugging
 
         pos = 0
 
+        # self.Log.debug("sound packet : " + tohex(message))  # for debugging
 
         (header, ) = struct.unpack("!B", message[pos])  # extract the header
         type = (header & 0b11100000) >> 5
@@ -512,6 +516,7 @@ class Mumble(threading.Thread):
 
         return lock
     # TODO: manage a timeout for blocking commands.  Currently, no command actually waits for the server to execute
+    # The result of these commands should actually be checked against incoming server updates
 
     def treat_command(self, cmd):
         """Send the awaiting commands to the server.  Used in the pymumble thread."""
