@@ -19,13 +19,14 @@ Status
 - Callback mechanism to react on server events
 - Manage the blobs (images, long comments, etc.)
 - Can send text messages to user and channel
+- Ping statistics
 
 ### What is missing:
+###### I don't need those features, so if you want one, open an issue and i will work on it.
 - UDP media.  Currently it works only in TCP tunneling mode (the standard fallback of mumble when UDP is not working)
 - basically server management (user creation and registration, ACLs, groups, bans, etc.)
 - Positionning is not managed, but it should be easy to add
 - Audio targets (whisper, etc.) is not managed in outgoing audio, and has very basic support in incoming
-- ping statistics
 - Probably a lot of other small features
 
 Architecture
