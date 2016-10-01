@@ -16,7 +16,7 @@ class SoundOutput:
     Class managing the sounds that must be sent to the server (best sent in a multiple of audio_per_packet samples)
     The buffering is the responsability of the caller, any partial sound will be sent without delay
     """
-    def __init__(self, mumble_object, audio_per_packet, bandwidth, codec_cfg=None):
+    def __init__(self, mumble_object, audio_per_packet, bandwidth, codec_cfg=PYMUMBLE_AUDIO_CONFIG):
         """
         audio_per_packet=packet audio duration in sec
         bandwidth=maximum total outgoing bandwidth
@@ -31,10 +31,7 @@ class SoundOutput:
         self.codec = None  # codec currently requested by the server
         self.encoder = None  # codec instance currently used to encode
         self.encoder_framesize = None  # size of an audio frame for the current codec (OPUS=audio_per_packet, CELT=0.01s)
-        if codec_cfg is None:
-            self.__codec_cfg = {"opus_profile" : PYMUMBLE_AUDIO_PROFILE_OPUS}
-        else:
-            self.__codec_cfg = codec_cfg
+        self.codec_cfg = codec_cfg
         
         self.set_audio_per_packet(audio_per_packet)
         self.set_bandwidth(bandwidth)
@@ -116,17 +113,6 @@ class SoundOutput:
                     raise socket.error("Server socket error")
                 tcppacket = tcppacket[sent:]
 
-    def set_codec_profile(self, profile):
-        """set the audio profile"""
-        if profile in ["audio", "voip"]:
-            self.__codec_cfg["opus_profile"] = profile
-        else:
-            raise ValueError("Unknown profile: " + str(profile))
-
-    def get_codec_profile(self):
-        """return the audio profile string"""
-        return self.__codec_cfg["opus_profile"]
-
     def get_audio_per_packet(self):
         """return the configured length of a audio packet (in ms)"""
         return self.audio_per_packet
@@ -199,7 +185,7 @@ class SoundOutput:
             return()
         
         if self.codec.opus:
-            self.encoder = opuslib.Encoder(PYMUMBLE_SAMPLERATE, 1, self.__codec_cfg["opus_profile"])
+            self.encoder = opuslib.Encoder(PYMUMBLE_SAMPLERATE, 1, self.codec_cfg["opus_profile"])
             self.encoder_framesize = self.audio_per_packet
             self.codec_type = PYMUMBLE_AUDIO_TYPE_OPUS
         else:
