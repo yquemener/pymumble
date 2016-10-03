@@ -92,7 +92,7 @@ class Mumble(threading.Thread):
         self.users = users.Users(self, self.callbacks)  # contain the server's connected users informations
         self.channels = channels.Channels(self, self.callbacks)  # contain the server's channels informations
         self.blobs = blobs.Blobs(self)  # manage the blob objects
-        self.sound_output = soundoutput.SoundOutput(self, PYMUMBLE_AUDIO_PER_PACKET, self.bandwidth)  # manage the outgoing sounds
+        self.sound_output = soundoutput.SoundOutput(self, PYMUMBLE_AUDIO_PER_PACKET, self.bandwidth, opus_profile=self.__opus_profile)  # manage the outgoing sounds
         self.commands = commands.Commands()  # manage commands sent between the main and the mumble threads
 
         self.receive_buffer = bytes()  # initialize the control connection input buffer
