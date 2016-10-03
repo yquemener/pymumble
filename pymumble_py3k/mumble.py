@@ -64,6 +64,7 @@ class Mumble(threading.Thread):
         self.reconnect = reconnect
         self.ping_stats = {"time_send": 0, "nb": 0, "avg": 40.0, "var": 0.0}
         self.tokens = tokens
+        self.__opus_profile = PYMUMBLE_AUDIO_TYPE_OPUS_PROFILE
 
         self.receive_sound = False  # set to True to treat incoming audio, otherwise it is simply ignored
 
@@ -91,7 +92,7 @@ class Mumble(threading.Thread):
         self.users = users.Users(self, self.callbacks)  # contain the server's connected users informations
         self.channels = channels.Channels(self, self.callbacks)  # contain the server's channels informations
         self.blobs = blobs.Blobs(self)  # manage the blob objects
-        self.sound_output = soundoutput.SoundOutput(self, PYMUMBLE_AUDIO_PER_PACKET, self.bandwidth)  # manage the outgoing sounds
+        self.sound_output = soundoutput.SoundOutput(self, PYMUMBLE_AUDIO_PER_PACKET, self.bandwidth, opus_profile=self.__opus_profile)  # manage the outgoing sounds
         self.commands = commands.Commands()  # manage commands sent between the main and the mumble threads
 
         self.receive_buffer = bytes()  # initialize the control connection input buffer
@@ -491,6 +492,17 @@ class Mumble(threading.Thread):
     def get_loop_rate(self):
         """Get the current main loop rate (pause per iteration)"""
         return self.loop_rate
+
+    def set_codec_profile(self, profile):
+        """set the audio profile"""
+        if profile in ["audio", "voip"]:
+            self.__opus_profile = profile
+        else:
+            raise ValueError("Unknown profile: " + str(profile))
+
+    def get_codec_profile(self):
+        """return the audio profile string"""
+        return self.__opus_profile
 
     def set_receive_sound(self, value):
         """Enable or disable the management of incoming sounds"""
