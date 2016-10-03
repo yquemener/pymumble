@@ -16,7 +16,7 @@ class SoundOutput:
     Class managing the sounds that must be sent to the server (best sent in a multiple of audio_per_packet samples)
     The buffering is the responsability of the caller, any partial sound will be sent without delay
     """
-    def __init__(self, mumble_object, audio_per_packet, bandwidth, codec_cfg=PYMUMBLE_AUDIO_CONFIG):
+    def __init__(self, mumble_object, audio_per_packet, bandwidth, opus_profile=PYMUMBLE_AUDIO_TYPE_OPUS_PROFILE):
         """
         audio_per_packet=packet audio duration in sec
         bandwidth=maximum total outgoing bandwidth
@@ -31,7 +31,7 @@ class SoundOutput:
         self.codec = None  # codec currently requested by the server
         self.encoder = None  # codec instance currently used to encode
         self.encoder_framesize = None  # size of an audio frame for the current codec (OPUS=audio_per_packet, CELT=0.01s)
-        self.codec_cfg = codec_cfg
+        self.opus_profile = opus_profile
         
         self.set_audio_per_packet(audio_per_packet)
         self.set_bandwidth(bandwidth)
@@ -185,7 +185,7 @@ class SoundOutput:
             return()
         
         if self.codec.opus:
-            self.encoder = opuslib.Encoder(PYMUMBLE_SAMPLERATE, 1, self.codec_cfg["opus_profile"])
+            self.encoder = opuslib.Encoder(PYMUMBLE_SAMPLERATE, 1, self.opus_profile)
             self.encoder_framesize = self.audio_per_packet
             self.codec_type = PYMUMBLE_AUDIO_TYPE_OPUS
         else:
