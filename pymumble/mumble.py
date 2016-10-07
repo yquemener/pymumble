@@ -7,6 +7,7 @@ import socket
 import ssl
 import struct
 
+from tools import VarInt
 from errors import *
 from constants import *
 import users
@@ -64,6 +65,7 @@ class Mumble(threading.Thread):
         self.reconnect = reconnect
         self.ping_stats = {"time_send": 0, "nb": 0, "avg": 40.0, "var": 0.0}
         self.tokens = tokens
+        self.crypt = {"key": None, "client_nonce": None, "server_nonce": None}
 
         self.receive_sound = False  # set to True to treat incoming audio, otherwise it is simply ignored
 
@@ -95,6 +97,7 @@ class Mumble(threading.Thread):
         self.commands = commands.Commands()  # manage commands sent between the main and the mumble threads
 
         self.receive_buffer = ""  # initialize the control connection input buffer
+
 
     def run(self):
         """Connect to the server and start the loop in its thread.  Retry if requested"""
@@ -186,6 +189,26 @@ class Mumble(threading.Thread):
                 self.control_socket.close()
                 self.connected = PYMUMBLE_CONN_STATE_NOT_CONNECTED
 
+    def crypt_setup(self, mess):
+        if mess.key:
+            self.crypt['key'] = mess.key
+        if mess.client_nonce:
+            self.crypt['client_nonce'] = mess.client_nonce
+        if mess.server_nonce:
+            self.crypt['server_nonce'] = mess.server_nonce
+        if self.crypt['key'] and self.crypt['client_nonce'] and self.crypt['server_nonce']:
+            self.media_socket = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
+            self.sound_output.ocb.setKey(bytes(self.crypt['key']))
+            self.udp_active = True
+            self.send_udp_ping()
+            print(self.crypt)
+
+    def send_udp_ping(self):
+        h = 0x20
+        t = VarInt(int(time.time()))
+        pk = struct.pack('!B',h) + t.encode()
+        self.media_socket.sendto(pk,(self.host,self.port))
+
     def ping(self):
         """Send the keepalive through available channels"""
         ping = mumble_pb2.Ping()
@@ -225,7 +248,7 @@ class Mumble(threading.Thread):
 
     def read_control_messages(self):
         """Read control messages coming from the server"""
-        # from tools import tohex  # for debugging
+        #        from tools import tohex  # for debugging
 
         try:
             buffer = self.control_socket.recv(PYMUMBLE_READ_BUFFER_SIZE)
@@ -245,7 +268,7 @@ class Mumble(threading.Thread):
             if len(self.receive_buffer) < size+6:  # if not length data, read further
                 break
 
-            # self.Log.debug("message received : " + tohex(self.receive_buffer[0:size+6]))  # for debugging
+            #            self.Log.debug("message received : " + tohex(self.receive_buffer[0:size+6]))  # for debugging
 
             message = self.receive_buffer[6:size+6]  # get the control message
             self.receive_buffer = self.receive_buffer[size+6:]  # remove from the buffer the read part
@@ -354,6 +377,7 @@ class Mumble(threading.Thread):
             mess = mumble_pb2.CryptSetup()
             mess.ParseFromString(message)
             self.Log.debug("message: CryptSetup : %s", mess)
+            self.crypt_setup(mess)
             self.ping()
 
         elif type == PYMUMBLE_MSG_TYPES_CONTEXTACTIONADD:
@@ -414,11 +438,11 @@ class Mumble(threading.Thread):
 
     def sound_received(self, message):
         """Manage a received sound message"""
-        # from tools import tohex  # for debugging
+        #        from tools import tohex  # for debugging
 
         pos = 0
 
-        # self.Log.debug("sound packet : " + tohex(message))  # for debugging
+        #        self.Log.debug("sound packet : " + tohex(message))  # for debugging
 
         (header, ) = struct.unpack("!B", message[pos])  # extract the header
         type = (header & 0b11100000) >> 5
@@ -426,6 +450,7 @@ class Mumble(threading.Thread):
         pos += 1
 
         if type == PYMUMBLE_AUDIO_TYPE_PING:
+            print("UDP PING")
             return
 
         session = tools.VarInt()  # decode session id
@@ -516,7 +541,7 @@ class Mumble(threading.Thread):
 
         return lock
     # TODO: manage a timeout for blocking commands.  Currently, no command actually waits for the server to execute
-    # The result of these commands should actually be checked against incoming server updates
+    #      The result of these commands should actually be checked against incoming server updates
 
     def treat_command(self, cmd):
         """Send the awaiting commands to the server.  Used in the pymumble thread."""
