@@ -9,7 +9,8 @@ import opuslib
 from constants import *
 from errors import CodecNotSupportedError
 from tools import VarInt
-
+from ocb.aes import AES
+from ocb import OCB
 
 class SoundOutput:
     """
@@ -42,6 +43,10 @@ class SoundOutput:
         self.sequence_last_time = 0  # time of the last emitted packet
         self.sequence = 0  # current sequence
         
+        aes = AES(128)
+        self.ocb = OCB(aes)
+
+
     def send_audio(self):
         """send the available audio to the server, taking care of the timing"""
         if not self.encoder or len(self.pcm) == 0:  # no codec configured or no audio sent
@@ -95,22 +100,26 @@ class SoundOutput:
             header = self.codec_type << 5  # encapsulate in audio packet
             target = 0
             sequence = VarInt(self.sequence).encode()
-            
-            udppacket = struct.pack('!B', header | target) + sequence + payload
-            
-            self.Log.debug("audio packet to send: sequence:{sequence}, type:{type}, length:{len}".format(
-                                    sequence=self.sequence,
-                                    type=self.codec_type,
-                                    len=len(udppacket)
-                                    ))
-            
-            tcppacket = struct.pack("!HL", PYMUMBLE_MSG_TYPES_UDPTUNNEL, len(udppacket)) + udppacket  # encapsulate in tcp tunnel
-            
-            while len(tcppacket) > 0:
-                sent = self.mumble_object.control_socket.send(tcppacket)
-                if sent < 0:
-                    raise socket.error("Server socket error")
-                tcppacket = tcppacket[sent:]
+
+            if self.mumble_object.media_socket:
+                self.ocb.setNonce(bytearray(bytes(self.mumble_object.crypt['client_nonce'])))
+                (tag,crypt_payload) = self.ocb.encrypt(bytearray(payload),b'')
+                udppacket = struct.pack('!B', header | target) + sequence + crypt_payload
+
+                self.Log.debug("audio UDP packet to send: sequence:{sequence}, type:{type}, length:{len}".format(sequence=self.sequence, type=self.codec_type, len=len(udppacket)))
+                self.mumble_object.media_socket.sendto(udppacket,(self.mumble_object.host, self.mumble_object.port))
+            else:
+                udppacket = struct.pack('!B', header | target) + sequence + payload
+
+                self.Log.debug("audio TCP packet to send: sequence:{sequence}, type:{type}, length:{len}".format(sequence=self.sequence, type=self.codec_type, len=len(udppacket)))
+
+                tcppacket = struct.pack("!HL", PYMUMBLE_MSG_TYPES_UDPTUNNEL, len(udppacket)) + udppacket  # encapsulate in tcp tunnel
+
+                while len(tcppacket) > 0:
+                    sent = self.mumble_object.control_socket.send(tcppacket)
+                    if sent < 0:
+                        raise socket.error("Server socket error")
+                    tcppacket = tcppacket[sent:]
 
     def get_audio_per_packet(self):
         """return the configured length of a audio packet (in ms)"""
