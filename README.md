@@ -8,6 +8,8 @@ This library is a fork of a fork of a fork (initial from https://github.com/Robe
 
 The wiki/API explanation is [HERE](API.md)
 
+The **Python 3** version is available in the [pymumble_py3 branch](https://github.com/azlux/pymumble/tree/pymumble_py3). I'm working on it with @ranomier, and it's working !! You can try this version and report bugs. In the futur the python3 version will be the main branch of pymumble.
+
 For a client application example, you can check https://github.com/azlux/MumbleRadioPlayer or https://github.com/Robert904/mumblerecbot
 
 Status
