@@ -102,12 +102,19 @@ class SoundOutput:
             sequence = VarInt(self.sequence).encode()
 
             if self.mumble_object.media_socket:
+                #self.ocb.setNonce(bytearray(bytes(self.mumble_object.crypt['client_nonce'])))
+                #(tag,crypt_payload) = self.ocb.encrypt(bytearray(payload),b'')
+                #udppacket = struct.pack('!B', header | target) + sequence + crypt_payload
+
+                #self.Log.debug("audio UDP packet to send: sequence:{sequence}, type:{type}, length:{len}".format(sequence=self.sequence, type=self.codec_type, len=len(udppacket)))
+                #self.mumble_object.media_socket.sendto(udppacket,(self.mumble_object.host, self.mumble_object.port))
+                
                 self.ocb.setNonce(bytearray(bytes(self.mumble_object.crypt['client_nonce'])))
-                (tag,crypt_payload) = self.ocb.encrypt(bytearray(payload),b'')
-                udppacket = struct.pack('!B', header | target) + sequence + crypt_payload
+                udppacket = struct.pack('!B', header | target) + sequence + payload
+                (tag,crypt_udp) = self.ocb.encrypt(bytearray(udppacket),b'')
 
                 self.Log.debug("audio UDP packet to send: sequence:{sequence}, type:{type}, length:{len}".format(sequence=self.sequence, type=self.codec_type, len=len(udppacket)))
-                self.mumble_object.media_socket.sendto(udppacket,(self.mumble_object.host, self.mumble_object.port))
+                self.mumble_object.media_socket.sendto(crypt_udp,(self.mumble_object.host, self.mumble_object.port))
             else:
                 udppacket = struct.pack('!B', header | target) + sequence + payload
 
