@@ -8,6 +8,8 @@ This library is a fork of a fork of a fork (initial from https://github.com/Robe
 
 The wiki/API explanation is [HERE](API.md)
 
+The **Python 2** version is available in the [master branch](https://github.com/azlux/pymumble/tree/master). It's working !! But since we have move ion python 3, the python 2 version will not have futur improvements.
+
 For a client application example, you can check https://github.com/azlux/MumbleRadioPlayer or https://github.com/Robert904/mumblerecbot
 
 Status
@@ -41,7 +43,7 @@ It rely on several other modules and objects, but they should probably never be 
 
 Requirements/installation
 -------------------------
-It seems to work fine on Python 2.6 and 2.7.
+It seems to work fine on Python 3.
 I have used it on both Windows and Linux
 
 Check the setup.py to know the versions of opuslib and protobuf needed
