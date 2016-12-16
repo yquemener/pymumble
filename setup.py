@@ -1,18 +1,19 @@
-import setuptools
+from distutils.core import setup
 
-setuptools.setup(
+setup(
     name="pymumble",
-    version='0.2.1',
+    description="Python3 version of pymumble, mumble librairy used for multiple uses like making mumble bot"
+    version='0.3.0',
     author='Robert Hendrickx',
     author_email='rober@percu.be',
-    maintainer='Antonin Auroy',
-    maintainer_email='antonin.auroy@gmail.com',
-    url='https://github.com/aauroy/pymumble',
+    maintainer='Azlux',
+    maintainer_email='azlux@outlook.com',
+    url='https://github.com/azlux/pymumble',
     license='GPLv3',
-    packages=['pymumble'],
+    packages=['pymumble_py3'],
     install_requires=[
         'opuslib>=1.1.0',
-        'protobuf>=2.6.1'
+        'protobuf>=3.1.0'
     ],
     classifiers=['Development Status :: 3 - Alpha',
                  'Intended Audience :: Developers',
