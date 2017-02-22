@@ -358,10 +358,12 @@ class Mumble(threading.Thread):
             self.ping()
 
         elif type == PYMUMBLE_MSG_TYPES_CONTEXTACTIONADD:
-            mess = mumble_pb2.ContextActionAdd()
+            mess = mumble_pb2.ContextAction()
             mess.ParseFromString(message)
             self.Log.debug("message: ContextActionAdd : %s", mess)
-
+            
+            self.callbacks(PYMUMBLE_CLBK_CONTEXTACTIONRECEIVED, mess)
+                
         elif type == PYMUMBLE_MSG_TYPES_CONTEXTACTION:
             mess = mumble_pb2.ContextActionAdd()
             mess.ParseFromString(message)
