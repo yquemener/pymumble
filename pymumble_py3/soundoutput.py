@@ -94,10 +94,9 @@ class SoundOutput:
                 payload += frameheader + encoded  # add the frame to the packet
             
             header = self.codec_type << 5  # encapsulate in audio packet
-            target = 0
             sequence = VarInt(self.sequence).encode()
             
-            udppacket = struct.pack('!B', header | target) + sequence + payload
+            udppacket = struct.pack('!B', header | self.target) + sequence + payload
             
             self.Log.debug("audio packet to send: sequence:{sequence}, type:{type}, length:{len}".format(
                                     sequence=self.sequence,
