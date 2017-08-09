@@ -357,17 +357,17 @@ class Mumble(threading.Thread):
             self.Log.debug("message: CryptSetup : %s", mess)
             self.ping()
 
-        elif type == PYMUMBLE_MSG_TYPES_CONTEXTACTIONADD:
-            mess = mumble_pb2.ContextAction()
+        elif type == PYMUMBLE_MSG_TYPES_CONTEXTACTIONMODIFY:
+            mess = mumble_pb2.ContextActionModify()
             mess.ParseFromString(message)
-            self.Log.debug("message: ContextActionAdd : %s", mess)
+            self.Log.debug("message: ContextActionModify : %s", mess)
             
             self.callbacks(PYMUMBLE_CLBK_CONTEXTACTIONRECEIVED, mess)
                 
         elif type == PYMUMBLE_MSG_TYPES_CONTEXTACTION:
-            mess = mumble_pb2.ContextActionAdd()
+            mess = mumble_pb2.ContextAction()
             mess.ParseFromString(message)
-            self.Log.debug("message: ContextActionAdd : %s", mess)
+            self.Log.debug("message: ContextAction : %s", mess)
 
         elif type == PYMUMBLE_MSG_TYPES_USERLIST:
             mess = mumble_pb2.UserList()
