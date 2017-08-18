@@ -45,11 +45,11 @@ This thread is in a loop that take care of the pings, send the commands to the s
 check for incoming messages including audio and check for audio to be sent.
 The rate of that loop is controlled by how long it will wait for an incoming message before going further.
 
-It rely on several other modules and objects, but they should probably never be instanciated by an application.
+You can know check is the thread is alive with `mumble_object.isAlive()` , the Mumble object will stop himself if he is disconnected from the server.
+Usefull if you need to restart it with a loop are a supervisor.
 
 Requirements/installation
 -------------------------
-It seems to work fine on Python 3.
 
 
 Check the requirement.txt to know the versions of opuslib and protobuf needed
