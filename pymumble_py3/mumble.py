@@ -62,7 +62,7 @@ class Mumble(threading.Thread):
         self.certfile = certfile
         self.keyfile = keyfile
         self.reconnect = reconnect
-        self.ping_stats = {"time_send": 0, "nb": 0, "avg": 40.0, "var": 0.0}
+        self.ping_stats = {"last_rcv": 0, "time_send": 0, "nb": 0, "avg": 40.0, "var": 0.0}
         self.tokens = tokens
         self.__opus_profile = PYMUMBLE_AUDIO_TYPE_OPUS_PROFILE
 
@@ -198,8 +198,13 @@ class Mumble(threading.Thread):
         self.Log.debug("sending: ping: %s", ping)
         self.send_message(PYMUMBLE_MSG_TYPES_PING, ping)
         self.ping_stats['time_send'] = int(time.time() * 1000)
+        self.Log.debug(self.ping_stats['last_rcv'])
+        if self.ping_stats['last_rcv'] != 0 and int(time.time() * 1000) > self.ping_stats['last_rcv'] + (60 * 1000):
+            self.Log.debug("Ping too long ! Disconnected ?")
+            self.connected = PYMUMBLE_CONN_STATE_NOT_CONNECTED
 
     def ping_response(self, mess):
+        self.ping_stats['last_rcv'] = int(time.time() * 1000)
         ping = int(time.time() * 1000) - self.ping_stats['time_send']
         old_avg = self.ping_stats['avg']
         nb = self.ping_stats['nb']
