@@ -52,7 +52,7 @@ Requirements/installation
 -------------------------
 
 Check the `requirement.txt` to know the versions of `opuslib` and `protobuf` needed.
-You need `pip3` because it's a Python 3 library (`apt-get install python3-pip`) to install dependencies (`pip3 install -r requirements.txt`.)
+You need `pip3` because it's a Python 3 library (`apt-get install python3-pip`) to install dependencies (`pip3 install -r requirements.txt`).
 
 Thanks
 -----------
