@@ -2,7 +2,7 @@ from distutils.core import setup
 
 setup(
     name="pymumble",
-    description="Python3 version of pymumble, mumble librairy used for multiple uses like making mumble bot",
+    description="Python 3 version of pymumble, Mumble library used for multiple uses like making mumble bot.",
     version='0.3.1',
     author='Robert Hendrickx',
     author_email='rober@percu.be',
