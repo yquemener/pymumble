@@ -127,7 +127,7 @@ class Mumble(threading.Thread):
         std_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
         try:
-            self.control_socket = ssl.wrap_socket(std_sock, certfile=self.certfile, keyfile=self.keyfile, ssl_version=ssl.PROTOCOL_TLSv1)
+            self.control_socket = ssl.wrap_socket(std_sock, certfile=self.certfile, keyfile=self.keyfile, ssl_version=ssl.PROTOCOL_TLS)
             self.control_socket.connect((self.host, self.port))
             self.control_socket.setblocking(0)
 
