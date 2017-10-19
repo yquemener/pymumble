@@ -1,2 +1,2 @@
-opuslib==1.1.0
-protobuf==3.3.0
+opuslib==2.0.0
+protobuf==3.4.0
