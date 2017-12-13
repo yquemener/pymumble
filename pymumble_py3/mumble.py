@@ -128,6 +128,9 @@ class Mumble(threading.Thread):
 
         try:
             self.control_socket = ssl.wrap_socket(std_sock, certfile=self.certfile, keyfile=self.keyfile, ssl_version=ssl.PROTOCOL_TLS)
+        except AttributeError:
+            self.control_socket = ssl.wrap_socket(std_sock, certfile=self.certfile, keyfile=self.keyfile, ssl_version=ssl.PROTOCOL_TLSv1)
+        try:
             self.control_socket.connect((self.host, self.port))
             self.control_socket.setblocking(0)
 
