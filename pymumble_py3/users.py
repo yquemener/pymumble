@@ -59,6 +59,7 @@ class User(dict):
     def __init__(self, mumble_object, message):
         self.mumble_object = mumble_object
         self["session"] = message.session
+        self["channel_id"] = 0
         self.update(message)
 
         self.sound = soundqueue.SoundQueue(self.mumble_object)  # will hold this user incoming audio
