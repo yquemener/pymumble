@@ -89,6 +89,11 @@ class Mumble(threading.Thread):
         self.server_max_bandwidth = None
         self.udp_active = False
 
+        # defaults accoring to https://wiki.mumble.info/wiki/Murmur.ini
+        self.server_allow_html = True
+        self.server_max_message_length = 5000
+        self.server_max_image_message_length = 131072
+
         self.users = users.Users(self, self.callbacks)  # contain the server's connected users informations
         self.channels = channels.Channels(self, self.callbacks)  # contain the server's channels informations
         self.blobs = blobs.Blobs(self)  # manage the blob objects
@@ -413,6 +418,17 @@ class Mumble(threading.Thread):
             mess = mumble_pb2.ServerConfig()
             mess.ParseFromString(message)
             self.Log.debug("message: ServerConfig : %s", mess)
+            for line in str(mess).split('\n'):
+                items = line.split(':')
+                if len(items) != 2:
+                    continue
+                if items[0] == 'allow_html':
+                    self.server_allow_html = items[1].strip() == 'true'
+                elif items[0] == 'message_length':
+                    self.server_max_message_length = int(items[1].strip())
+                elif items[0] == 'image_message_length':
+                    self.server_max_image_message_length = int(items[1].strip())
+
 
     def set_bandwidth(self, bandwidth):
         """Set the total allowed outgoing bandwidth"""
@@ -588,3 +604,6 @@ class Mumble(threading.Thread):
             self.send_message(PYMUMBLE_MSG_TYPES_USERSTATE, userstate)
             cmd.response = True
             self.commands.answer(cmd)
+
+    def get_max_message_length(self):
+        return self.server_max_message_length

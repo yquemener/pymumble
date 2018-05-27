@@ -62,3 +62,11 @@ class InvalidVarInt(Exception):
 
     def __str__(self):
         return repr(self.value)
+
+class TextTooLongError(Exception):
+    """Throwned when trying to send a message which is longer than allowed"""
+    def __init__(self, value):
+        self.value = value
+
+    def __str__(self):
+        return 'Maximum allowed length: {}'.format(self.value)
