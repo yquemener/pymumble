@@ -161,6 +161,8 @@ class Channel(dict):
         """Send a text message to the channel."""
 
         # TODO: This check should be done inside execute_command()
+        # However, this is currently not possible because execute_command() does
+        # not actually execute the command.
         if len(message) > self.mumble_object.get_max_message_length():
             raise TextTooLongError(self.mumble_object.get_max_message_length())
 
