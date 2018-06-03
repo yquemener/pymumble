@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from .constants import *
 from threading import Lock
-from .errors import UnknownChannelError
+from .errors import UnknownChannelError, TextTooLongError
 from . import messages
 
 
@@ -139,26 +139,33 @@ class Channel(dict):
         if name not in self or self[name] != field:
             self[name] = field
             actions[name] = field
-            
+
         return actions  # return a dict with updates performed, useful for the callback functions
-    
+
     def get_property(self, property):
         if property in self:
             return self[property]
         else:
             return None
-        
+
     def move_in(self, session=None):
         """Ask to move a session in a specific channel.  By default move pymumble own session"""
         if session is None:
             session = self.mumble_object.users.myself_session
-        
+
         cmd = messages.MoveCmd(session, self["channel_id"])
         self.mumble_object.execute_command(cmd)
-    
+
 
     def send_text_message(self, message):
         """Send a text message to the channel."""
+
+        # TODO: This check should be done inside execute_command()
+        # However, this is currently not possible because execute_command() does
+        # not actually execute the command.
+        if len(message) > self.mumble_object.get_max_message_length():
+            raise TextTooLongError(self.mumble_object.get_max_message_length())
+
         session = self.mumble_object.users.myself_session
 
         cmd = messages.TextMessage(session, self["channel_id"], message)

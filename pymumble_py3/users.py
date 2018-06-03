@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from .constants import *
+from .errors import TextTooLongError
 from threading import Lock
 from . import soundqueue
 from . import messages
@@ -207,5 +208,12 @@ class User(dict):
 
     def send_message(self, message):
         """Send a text message to the user."""
+
+        # TODO: This check should be done inside execute_command()
+        # However, this is currently not possible because execute_command() does
+        # not actually execute the command.
+        if len(message) > self.mumble_object.get_max_message_length():
+            raise TextTooLongError(self.mumble_object.get_max_message_length())
+
         cmd = messages.TextPrivateMessage(self["session"], message)
         self.mumble_object.execute_command(cmd)

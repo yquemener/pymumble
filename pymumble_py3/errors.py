@@ -2,7 +2,7 @@
 
 
 class CodecNotSupportedError(Exception):
-    """Throwned when receiving an audio packet from an unsupported codec"""
+    """Thrown when receiving an audio packet from an unsupported codec"""
     def __init__(self, value):
         self.value = value
 
@@ -11,7 +11,7 @@ class CodecNotSupportedError(Exception):
 
 
 class ConnectionRejectedError(Exception):
-    """Throwned when server reject the connection"""
+    """Thrown when server reject the connection"""
     def __init__(self, value):
         self.value = value
 
@@ -20,7 +20,7 @@ class ConnectionRejectedError(Exception):
 
 
 class InvalidFormatError(Exception):
-    """Throwned when receiving a packet not understood"""
+    """Thrown when receiving a packet not understood"""
     def __init__(self, value):
         self.value = value
 
@@ -29,7 +29,7 @@ class InvalidFormatError(Exception):
 
 
 class UnknownCallbackError(Exception):
-    """Throwned when asked for an unknown callback"""
+    """Thrown when asked for an unknown callback"""
     def __init__(self, value):
         self.value = value
 
@@ -38,27 +38,35 @@ class UnknownCallbackError(Exception):
 
 
 class UnknownChannelError(Exception):
-    """Throwned when using an unknown channel"""
+    """Thrown when using an unknown channel"""
     def __init__(self, value):
         self.value = value
 
     def __str__(self):
         return repr(self.value)
-    
+
 
 class InvalidSoundDataError(Exception):
-    """Throwned when trying to send an invalid audio pcm data"""
+    """Thrown when trying to send an invalid audio pcm data"""
     def __init__(self, value):
         self.value = value
 
     def __str__(self):
         return repr(self.value)
-    
+
 
 class InvalidVarInt(Exception):
-    """Throwned when trying to decode an invalid varint"""
+    """Thrown when trying to decode an invalid varint"""
     def __init__(self, value):
         self.value = value
 
     def __str__(self):
         return repr(self.value)
+
+class TextTooLongError(Exception):
+    """Thrown when trying to send a message which is longer than allowed"""
+    def __init__(self, value):
+        self.value = value
+
+    def __str__(self):
+        return 'Maximum allowed length: {}'.format(self.value)
