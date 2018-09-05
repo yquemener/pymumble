@@ -580,6 +580,26 @@ class Mumble(threading.Thread):
             self.send_message(PYMUMBLE_MSG_TYPES_TEXTMESSAGE, textprivatemessage)
             cmd.response = True
             self.commands.answer(cmd)
+        elif cmd.cmd == PYMUMBLE_MSG_TYPES_CHANNELSTATE:
+            channelstate = mumble_pb2.ChannelState()
+            channelstate.parent = cmd.parameters["parent"]
+            channelstate.name = cmd.parameters["name"]
+            channelstate.temporary = cmd.parameters["temporary"]
+            self.send_message(PYMUMBLE_MSG_TYPES_CHANNELSTATE, channelstate)
+            cmd.response = True
+            self.commands.answer(cmd)
+        elif cmd.cmd == PYMUMBLE_MSG_TYPES_VOICETARGET:
+            textvoicetarget = mumble_pb2.VoiceTarget()
+            textvoicetarget.id = cmd.parameters["id"]
+            targets = []
+            for target in cmd.parameters["targets"]:
+                tp = mumble_pb2.VoiceTarget.Target()
+                tp.session.append(target)
+                targets.append(tp)
+            textvoicetarget.targets.extend(targets)
+            self.send_message(PYMUMBLE_MSG_TYPES_VOICETARGET, textvoicetarget)
+            cmd.response = True
+            self.commands.answer(cmd)
         elif cmd.cmd == PYMUMBLE_CMD_MODUSERSTATE:
             userstate = mumble_pb2.UserState()
             userstate.session = cmd.parameters["session"]

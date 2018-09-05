@@ -67,7 +67,19 @@ class CreateChannel(Cmd):
 
     def __init__(self, parent, name, temporary):
         Cmd.__init__(self)
+
         self.cmd = PYMUMBLE_MSG_TYPES_CHANNELSTATE
         self.parameters = {"parent": parent,
                            "name": name,
                            "temporary": temporary}
+
+
+class VoiceTarget(Cmd):
+    """Command to create a whisper"""
+
+    def __init__(self, id, users):
+        Cmd.__init__(self)
+
+        self.cmd = PYMUMBLE_MSG_TYPES_VOICETARGET
+        self.parameters = {"id": id,
+                           "targets": users}

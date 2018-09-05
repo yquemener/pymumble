@@ -9,6 +9,7 @@ import opuslib
 from .constants import *
 from .errors import CodecNotSupportedError
 from .tools import VarInt
+from .messages import VoiceTarget
 
 
 class SoundOutput:
@@ -192,4 +193,17 @@ class SoundOutput:
 
         self._set_bandwidth()
 
+    def set_whisper(self, users_id):
+        if not users_id:
+            return
+        if type(users_id) is int:
+            users_id = [users_id]
+        self.target = 2
+        cmd = VoiceTarget(self.target, users_id)
+        print("test1")
+        self.mumble_object.execute_command(cmd)
 
+    def remove_whisper(self):
+        self.target = 0
+        cmd = VoiceTarget(self.target, [])
+        self.mumble_object.execute_command(cmd)
