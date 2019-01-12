@@ -17,37 +17,38 @@ class SoundOutput:
     Class managing the sounds that must be sent to the server (best sent in a multiple of audio_per_packet samples)
     The buffering is the responsability of the caller, any partial sound will be sent without delay
     """
+
     def __init__(self, mumble_object, audio_per_packet, bandwidth, opus_profile=PYMUMBLE_AUDIO_TYPE_OPUS_PROFILE):
         """
         audio_per_packet=packet audio duration in sec
         bandwidth=maximum total outgoing bandwidth
         """
         self.mumble_object = mumble_object
-        
+
         self.Log = self.mumble_object.Log
-        
+
         self.pcm = []
         self.lock = threading.Lock()
-        
+
         self.codec = None  # codec currently requested by the server
         self.encoder = None  # codec instance currently used to encode
         self.encoder_framesize = None  # size of an audio frame for the current codec (OPUS=audio_per_packet, CELT=0.01s)
         self.opus_profile = opus_profile
-        
+
         self.set_audio_per_packet(audio_per_packet)
         self.set_bandwidth(bandwidth)
 
         self.codec_type = None  # codec type number to be used in audio packets
         self.target = 0  # target is not implemented yet, so always 0
-        
+
         self.sequence_start_time = 0  # time of sequence 1
         self.sequence_last_time = 0  # time of the last emitted packet
         self.sequence = 0  # current sequence
-        
+
     def send_audio(self):
         """send the available audio to the server, taking care of the timing"""
         if not self.encoder or len(self.pcm) == 0:  # no codec configured or no audio sent
-            return()
+            return ()
 
         samples = int(self.encoder_framesize * PYMUMBLE_SAMPLERATE * 2)  # number of samples in an encoder frame
 
@@ -64,25 +65,25 @@ class SoundOutput:
             else:  # continuous sound
                 self.sequence += int(self.audio_per_packet / PYMUMBLE_SEQUENCE_DURATION)
                 self.sequence_last_time = self.sequence_start_time + (self.sequence * PYMUMBLE_SEQUENCE_DURATION)
-                
+
             payload = bytearray()  # content of the whole packet, without tcptunnel header
             audio_encoded = 0  # audio time already in the packet
-            
+
             while len(self.pcm) > 0 and audio_encoded < self.audio_per_packet:  # more audio to be sent and packet not full
                 self.lock.acquire()
                 to_encode = self.pcm.pop(0)
                 self.lock.release()
 
                 if len(to_encode) != samples:  # pad to_encode if needed to match sample length
-                    to_encode += b'\x00'*(samples-len(to_encode))
+                    to_encode += b'\x00' * (samples - len(to_encode))
 
                 try:
-                    encoded = self.encoder.encode(to_encode, len(to_encode)//2)
+                    encoded = self.encoder.encode(to_encode, len(to_encode) // 2)
                 except opuslib.exceptions.OpusError:
                     encoded = b''
-                         
+
                 audio_encoded += self.encoder_framesize
-                
+
                 # create the audio frame header
                 if self.codec_type == PYMUMBLE_AUDIO_TYPE_OPUS:
                     frameheader = VarInt(len(encoded)).encode()
@@ -91,22 +92,22 @@ class SoundOutput:
                     if audio_encoded < self.audio_per_packet and len(self.pcm) > 0:  # if not last frame for the packet, set the terminator bit
                         frameheader += (1 << 7)
                     frameheader = struct.pack('!B', frameheader)
-                
+
                 payload += frameheader + encoded  # add the frame to the packet
-            
+
             header = self.codec_type << 5  # encapsulate in audio packet
             sequence = VarInt(self.sequence).encode()
-            
+
             udppacket = struct.pack('!B', header | self.target) + sequence + payload
-            
+
             self.Log.debug("audio packet to send: sequence:{sequence}, type:{type}, length:{len}".format(
-                                    sequence=self.sequence,
-                                    type=self.codec_type,
-                                    len=len(udppacket)
-                                    ))
-            
+                sequence=self.sequence,
+                type=self.codec_type,
+                len=len(udppacket)
+            ))
+
             tcppacket = struct.pack("!HL", PYMUMBLE_MSG_TYPES_UDPTUNNEL, len(udppacket)) + udppacket  # encapsulate in tcp tunnel
-            
+
             while len(tcppacket) > 0:
                 sent = self.mumble_object.control_socket.send(tcppacket)
                 if sent < 0:
@@ -116,21 +117,21 @@ class SoundOutput:
     def get_audio_per_packet(self):
         """return the configured length of a audio packet (in ms)"""
         return self.audio_per_packet
-    
+
     def set_audio_per_packet(self, audio_per_packet):
         """set the length of an audio packet (in ms)"""
         self.audio_per_packet = audio_per_packet
         self.create_encoder()
-        
+
     def get_bandwidth(self):
         """get the configured bandwidth for the audio output"""
         return self.bandwidth
-    
+
     def set_bandwidth(self, bandwidth):
         """set the bandwidth for the audio output"""
         self.bandwidth = bandwidth
         self._set_bandwidth()
-        
+
     def _set_bandwidth(self):
         """do the calculation of the overhead and configure the actual bitrate for the codec"""
         if self.encoder:
@@ -141,13 +142,14 @@ class SoundOutput:
             else:
                 overhead_per_packet += 20  # TCP header
                 overhead_per_packet += 6  # TCPTunnel encapsulation
-                
-            overhead_per_second = int(overhead_per_packet*8 / self.audio_per_packet)  # in bits 
-            
-            self.Log.debug("Bandwidth is {bandwidth}, downgrading to {bitrate} due to the protocol overhead".format(bandwidth=self.bandwidth, bitrate=self.bandwidth-overhead_per_second))
-            
-            self.encoder.bitrate = self.bandwidth-overhead_per_second
-        
+
+            overhead_per_second = int(overhead_per_packet * 8 / self.audio_per_packet)  # in bits
+
+            self.Log.debug(
+                "Bandwidth is {bandwidth}, downgrading to {bitrate} due to the protocol overhead".format(bandwidth=self.bandwidth, bitrate=self.bandwidth - overhead_per_second))
+
+            self.encoder.bitrate = self.bandwidth - overhead_per_second
+
     def add_sound(self, pcm):
         """add sound to be sent (in PCM mono 16 bits signed format)"""
         if len(pcm) % 2 != 0:  # check that the data is align on 16 bits
@@ -162,7 +164,7 @@ class SoundOutput:
         else:
             initial_offset = 0
         for i in range(initial_offset, len(pcm), samples):
-            self.pcm.append(pcm[i:i+samples])
+            self.pcm.append(pcm[i:i + samples])
         self.lock.release()
 
     def clear_buffer(self):
@@ -173,17 +175,17 @@ class SoundOutput:
     def get_buffer_size(self):
         """return the size of the unsent buffer in sec"""
         return sum(len(chunk) for chunk in self.pcm) / 2. / PYMUMBLE_SAMPLERATE
-        
+
     def set_default_codec(self, codecversion):
         """Set the default codec to be used to send packets"""
         self.codec = codecversion
         self.create_encoder()
-        
+
     def create_encoder(self):
         """create the encoder instance, and set related constants"""
         if not self.codec:
-            return()
-        
+            return ()
+
         if self.codec.opus:
             self.encoder = opuslib.Encoder(PYMUMBLE_SAMPLERATE, 1, self.opus_profile)
             self.encoder_framesize = self.audio_per_packet
@@ -193,14 +195,15 @@ class SoundOutput:
 
         self._set_bandwidth()
 
-    def set_whisper(self, users_id):
-        if not users_id:
+    def set_whisper(self, target_id, channel=False):
+        if not target_id:
             return
-        if type(users_id) is int:
-            users_id = [users_id]
+        if type(target_id) is int:
+            target_id = [target_id]
         self.target = 2
-        cmd = VoiceTarget(self.target, users_id)
-        print("test1")
+        if channel:
+            self.target = 1
+        cmd = VoiceTarget(self.target, target_id)
         self.mumble_object.execute_command(cmd)
 
     def remove_whisper(self):

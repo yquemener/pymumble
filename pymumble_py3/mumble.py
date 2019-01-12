@@ -25,6 +25,7 @@ class Mumble(threading.Thread):
     Mumble client library main object.
     basically a thread
     """
+
     def __init__(self, host, user, port=64738, password='', certfile=None, keyfile=None, reconnect=False, tokens=[], debug=False):
         """
         host=mumble server hostname or address
@@ -256,13 +257,13 @@ class Mumble(threading.Thread):
 
             (type, size) = struct.unpack("!HL", header)  # decode header
 
-            if len(self.receive_buffer) < size+6:  # if not length data, read further
+            if len(self.receive_buffer) < size + 6:  # if not length data, read further
                 break
 
             # self.Log.debug("message received : " + tohex(self.receive_buffer[0:size+6]))  # for debugging
 
-            message = self.receive_buffer[6:size+6]  # get the control message
-            self.receive_buffer = self.receive_buffer[size+6:]  # remove from the buffer the read part
+            message = self.receive_buffer[6:size + 6]  # get the control message
+            self.receive_buffer = self.receive_buffer[size + 6:]  # remove from the buffer the read part
 
             self.dispatch_control_message(type, message)
 
@@ -374,9 +375,9 @@ class Mumble(threading.Thread):
             mess = mumble_pb2.ContextActionModify()
             mess.ParseFromString(message)
             self.Log.debug("message: ContextActionModify : %s", mess)
-            
+
             self.callbacks(PYMUMBLE_CLBK_CONTEXTACTIONRECEIVED, mess)
-                
+
         elif type == PYMUMBLE_MSG_TYPES_CONTEXTACTION:
             mess = mumble_pb2.ContextAction()
             mess.ParseFromString(message)
@@ -429,7 +430,6 @@ class Mumble(threading.Thread):
                 elif items[0] == 'image_message_length':
                     self.server_max_image_message_length = int(items[1].strip())
 
-
     def set_bandwidth(self, bandwidth):
         """Set the total allowed outgoing bandwidth"""
         if self.server_max_bandwidth is not None and bandwidth > self.server_max_bandwidth:
@@ -446,7 +446,7 @@ class Mumble(threading.Thread):
         pos = 0
 
         # self.Log.debug("sound packet : " + tohex(message))  # for debugging
-        (header, ) = struct.unpack("!B", bytes([message[pos]]))  # extract the header
+        (header,) = struct.unpack("!B", bytes([message[pos]]))  # extract the header
         type = (header & 0b11100000) >> 5
         target = header & 0b00011111
         pos += 1
@@ -455,10 +455,10 @@ class Mumble(threading.Thread):
             return
 
         session = tools.VarInt()  # decode session id
-        pos += session.decode(message[pos:pos+10])
+        pos += session.decode(message[pos:pos + 10])
 
         sequence = tools.VarInt()  # decode sequence number
-        pos += sequence.decode(message[pos:pos+10])
+        pos += sequence.decode(message[pos:pos + 10])
 
         self.Log.debug("audio packet received from %i, sequence %i, type:%i, target:%i, lenght:%i", session.value, sequence.value, type, target, len(message))
 
@@ -467,25 +467,25 @@ class Mumble(threading.Thread):
             if type == PYMUMBLE_AUDIO_TYPE_OPUS:
                 size = tools.VarInt()  # OPUS use varint for the frame length
 
-                pos += size.decode(message[pos:pos+10])
+                pos += size.decode(message[pos:pos + 10])
                 size = size.value
 
                 if not (size & 0x2000):  # terminator is 0x2000 in the resulting int.
-                    terminator = True    # should actually always be 0 as OPUS can use variable length audio frames
+                    terminator = True  # should actually always be 0 as OPUS can use variable length audio frames
 
                 size &= 0x1fff  # isolate the size from the terminator
             else:
-                (header, ) = struct.unpack("!B", message[pos])  # CELT length and terminator is encoded in a 1 byte int
+                (header,) = struct.unpack("!B", message[pos])  # CELT length and terminator is encoded in a 1 byte int
                 if not (header & 0b10000000):
                     terminator = True
                 size = header & 0b01111111
                 pos += 1
 
-            self.Log.debug("Audio frame : time:%f, last:%s, size:%i, type:%i, target:%i, pos:%i", time.time(), str(terminator), size, type, target, pos-1)
+            self.Log.debug("Audio frame : time:%f, last:%s, size:%i, type:%i, target:%i, pos:%i", time.time(), str(terminator), size, type, target, pos - 1)
 
             if size > 0 and self.receive_sound:  # if audio must be treated
                 try:
-                    newsound = self.users[session.value].sound.add(message[pos:pos+size],
+                    newsound = self.users[session.value].sound.add(message[pos:pos + size],
                                                                    sequence.value,
                                                                    type,
                                                                    target)  # add the sound to the user's sound queue
@@ -552,6 +552,7 @@ class Mumble(threading.Thread):
             lock.release()
 
         return lock
+
     # TODO: manage a timeout for blocking commands.  Currently, no command actually waits for the server to execute
     # The result of these commands should actually be checked against incoming server updates
 
@@ -592,10 +593,15 @@ class Mumble(threading.Thread):
             textvoicetarget = mumble_pb2.VoiceTarget()
             textvoicetarget.id = cmd.parameters["id"]
             targets = []
-            for target in cmd.parameters["targets"]:
-                tp = mumble_pb2.VoiceTarget.Target()
-                tp.session.append(target)
-                targets.append(tp)
+            if cmd.parameters["id"] == 1:
+                voicetarget = mumble_pb2.VoiceTarget.Target()
+                voicetarget.channel_id = cmd.parameters["targets"][0]
+                targets.append(voicetarget)
+            else:
+                for target in cmd.parameters["targets"]:
+                    voicetarget = mumble_pb2.VoiceTarget.Target()
+                    voicetarget.session.append(target)
+                    targets.append(voicetarget)
             textvoicetarget.targets.extend(targets)
             self.send_message(PYMUMBLE_MSG_TYPES_VOICETARGET, textvoicetarget)
             cmd.response = True
@@ -627,3 +633,6 @@ class Mumble(threading.Thread):
 
     def get_max_message_length(self):
         return self.server_max_message_length
+
+    def get_max_image_length(self):
+        return self.server_max_image_message_length

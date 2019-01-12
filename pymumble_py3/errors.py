@@ -3,6 +3,7 @@
 
 class CodecNotSupportedError(Exception):
     """Thrown when receiving an audio packet from an unsupported codec"""
+
     def __init__(self, value):
         self.value = value
 
@@ -12,6 +13,7 @@ class CodecNotSupportedError(Exception):
 
 class ConnectionRejectedError(Exception):
     """Thrown when server reject the connection"""
+
     def __init__(self, value):
         self.value = value
 
@@ -21,6 +23,7 @@ class ConnectionRejectedError(Exception):
 
 class InvalidFormatError(Exception):
     """Thrown when receiving a packet not understood"""
+
     def __init__(self, value):
         self.value = value
 
@@ -30,6 +33,7 @@ class InvalidFormatError(Exception):
 
 class UnknownCallbackError(Exception):
     """Thrown when asked for an unknown callback"""
+
     def __init__(self, value):
         self.value = value
 
@@ -39,6 +43,7 @@ class UnknownCallbackError(Exception):
 
 class UnknownChannelError(Exception):
     """Thrown when using an unknown channel"""
+
     def __init__(self, value):
         self.value = value
 
@@ -48,6 +53,7 @@ class UnknownChannelError(Exception):
 
 class InvalidSoundDataError(Exception):
     """Thrown when trying to send an invalid audio pcm data"""
+
     def __init__(self, value):
         self.value = value
 
@@ -57,16 +63,29 @@ class InvalidSoundDataError(Exception):
 
 class InvalidVarInt(Exception):
     """Thrown when trying to decode an invalid varint"""
+
     def __init__(self, value):
         self.value = value
 
     def __str__(self):
         return repr(self.value)
 
+
 class TextTooLongError(Exception):
     """Thrown when trying to send a message which is longer than allowed"""
+
     def __init__(self, value):
         self.value = value
 
     def __str__(self):
-        return 'Maximum allowed length: {}'.format(self.value)
+        return 'Maximum Text allowed length: {}'.format(self.value)
+
+
+class ImageTooBigError(Exception):
+    """Thrown when trying to send a message or image which is longer than allowed"""
+
+    def __init__(self, value):
+        self.value = value
+
+    def __str__(self):
+        return 'Maximum Text/Image allowed length: {}'.format(self.value)
