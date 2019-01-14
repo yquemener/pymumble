@@ -1,7 +1,7 @@
 API
 ===
 ## main Mumble object
-> class Mumble(host, user, port=64738, password='', certfile=None, keyfile=None, reconnect=False, tokens=[], debug=False)
+> `class Mumble(host, user, port=64738, password='', certfile=None, keyfile=None, reconnect=False, tokens=[], debug=False)`
 
 It should be quite straightforward. `debug=True` will generate a LOT of stdout messages. Otherwise it should be silent in normal conditions.
 Reconnect should allow the library to reconnect automatically if the server disconnect it.
@@ -14,34 +14,34 @@ The `certfile` parameter takes the path to a Mumble certificate in `.pem` format
 
 ```$ openssl pkcs12 -in PATH_TO_CERTFILE.p12 -out CERTFILE_NAME.pem -nocerts -nodes``` for the key file.
 
-> Mumble.start()
+> `Mumble.start()`
 
 Start the library thread and the connection process
 
-> Mumble.is_ready()
+> `Mumble.is_ready()`
 
 Block until the connection process is concluded.
 
-> Mumble.set_bandwidth(int)
+> `Mumble.set_bandwidth(int)`
 
 Set (in bit per seconds) the allowed total outgoing bandwidth of the library. Can be limited by the server.
 
-> Mumble.set_application_string(string)
+> `Mumble.set_application_string(string)`
 
 Set the application name that will be sent to the server. Must be done before the `start()`.
 
-> Mumble.set_loop_rate(float)
+> `Mumble.set_loop_rate(float)`
 
 Set in second how long the library will wait for an incoming message, which slowdown the loop.
 Must be small enough for the audio treatment you need, but if too small it will consume too much CPU
 0.01 is the default and seems to be small enough to send audio in 20ms packets.
 For application that just receive sound, bigger should be enough (like 0.05).
 
-> Mumble.get_loop_rate()
+> `Mumble.get_loop_rate()`
 
 Return the current `loop_rate`.
 
-> Mumble.set_receive_sound(bool)
+> `Mumble.set_receive_sound(bool)`
 
 By default, incoming sound is not treated. If you plan to use the incoming audio, you must set this to `True`,
 but then you have to get the audio out of the library regularly otherwise it will simply consume memory.
@@ -63,27 +63,27 @@ Callback names are in `pymumble.constants` module, starting with `PYMUMBLE_CLBK_
 
 **Callbacks are executed within the library looping thread. Keep it's work short or you could have jitter issues!**
 
-> Mumble.callbacks.set_callback(callback, function)
+> `Mumble.callbacks.set_callback(callback, function)`
 
 Assign a function to a callback (replace the previous ones if any).
 
-> Mumble.callbacks.add_callback(callback, function)
+> `Mumble.callbacks.add_callback(callback, function)`
 
 Assign an additional function to a callback.
 
-> Mumble.callbacks.get_callback(callback)
+> `Mumble.callbacks.get_callback(callback)`
 
 Return a list of functions assign to this callback or `None`.
 
-> Mumble.callbacks.remove_callback(callback, function)
+> `Mumble.callbacks.remove_callback(callback, function)`
 
 Remove the specified function from the ones assign to this callback.
 
-> Mumble.callbacks.reset_callback(callback)
+> `Mumble.callbacks.reset_callback(callback)`
 
 Remove all defined callback functions for this callback.
 
-> Mumble.callbacks.get_callbacks_list()
+> `Mumble.callbacks.get_callbacks_list()`
 
 Return the list of all the available callbacks. Better use the constants though.
 
@@ -91,19 +91,19 @@ Return the list of all the available callbacks. Better use the constants though.
 Store the users connected on the server. For the application, it is basically only interesting as a `dict` of `User` objects,
 which contain the actual information.
 
-> Mumble.users[int]
+> `Mumble.users[int]`
 
 Where `int` is the session number on the server. It points to the specific `User` object for this session.
 
-> Mumble.users.count()
+> `Mumble.users.count()`
 
 Return the number of connected users on the server.
 
-> Mumble.users.myself_session
+> `Mumble.users.myself_session`
 
 Contain the session number of the `pymumble` connection itself.
 
-> Mumble.users.myself
+> `Mumble.users.myself`
 
 Is a shortcut to `Mumble.users[Mumble.users.myself_session]`, pointing to the User object of the current connection.
 
@@ -111,35 +111,35 @@ Is a shortcut to `Mumble.users[Mumble.users.myself_session]`, pointing to the Us
 Contain the users information and method to act on them.
 User also contain an instance of the SoundQueue object, containing the audio received from this user.
 
-> User.sound
+> `User.sound`
 
 SoundQueue instance for this user.
 
-> User.get_property()
+> `User.get_property()`
 
 Return the value of the property.
 
-> User.mute()
-> User.unmute()
+> `User.mute()`
+> `User.unmute()`
 
-> User.deafen()
-> User.undeafen()
+> `User.deafen()`
+> `User.undeafen()`
 
-> User.suppress()
-> User.unsuppress()
+> `User.suppress()`
+> `User.unsuppress()`
 
-> User.recording()
-> User.unrecorfing()
+> `User.recording()`
+> `User.unrecorfing()`
 
-> User.comment(string)
+> `User.comment(string)`
 
 Set the comment for this user.
 
-> user.texture(texture)
+> `user.texture(texture)`
 
 Set the image for this user (must be a format recognized by the Mumble clients. PNG seems to work, I had issues with SVG).
 
-> user.send_message(message)
+> `user.send_message(message)`
 
 Send a message to the specific user.
 
@@ -147,21 +147,21 @@ Send a message to the specific user.
 Contains the audio received from a specific user.
 Take care of the decoding and keep track on the timing of the reception.
 
-> User.sound.set_receive_sound(bool)
+> `User.sound.set_receive_sound(bool)`
 
 Allow stopping treating incoming audio for a specific user if `False`. `True` by default.
 
-> User.sound.is_sound()
+> `User.sound.is_sound()`
 
 Return `True` if sound is present in this `SoundQueue`.
 
-> User.sound.get_sound(duration=None)
+> `User.sound.get_sound(duration=None)`
 
 Return a `SoundChunk` object containing the audio received in one packet coming from the server, and discard it from the list.
 If `duration` (in sec) is specified and smaller than the size of the next available audio, the split is taken care of.
 **Do not use a non 10ms multiple as it is the basic unit in Mumble.**
 
-> User.sound.first_sound()
+> `User.sound.first_sound()`
 
 Return a `SoundChunk` object (the next one) but do not discard it.
 Useful to check it's timing without actually treat it yet.
@@ -169,35 +169,35 @@ Useful to check it's timing without actually treat it yet.
 ## SoundChunk object (received from User.sound)
 It contains a sound unit, as received from the server.
 It as several properties
-> SoundChunk.pcm
+> `SoundChunk.pcm`
 
 The PCM buffer for this sound, in 16 bits signed mono little-endian 48000Hz format.
 
-> SoundChunk.timestamp
+> `SoundChunk.timestamp`
 
 Time when the packet was received.
 
-> SoundChunk.time
+> `SoundChunk.time`
 
 Time calculated based on Mumble sequences (better to reconstruct the stream).
 
-> SoundChunk.sequence
+> `SoundChunk.sequence`
 
 Mumble sequence for the packet.
 
-> SoundChunk.size
+> `SoundChunk.size`
 
 Size of the PCM in bytes.
 
-> SoundChunk.duration
+> `SoundChunk.duration`
 
 Length of the PCM in secs.
 
-> SoundChunk.type
+> `SoundChunk.type`
 
 Mumble type for the chunk (coded used).
 
-> SoundChunk.target
+> `SoundChunk.target`
 
 Target of the packet, as sent by the server.
 
@@ -205,59 +205,75 @@ Target of the packet, as sent by the server.
 Contains the channels known on the server. Allow listing and finding them.
 It is again a `dict` by channel ids (root=0) containing all the Channel objects.
 
-> Mumble.channels.find_by_tree(iterable)
+> `Mumble.channels.find_by_tree(iterable)`
 
 Search, starting from the root for every element a subchannel with the same name.
 Return the channel object or raise a `UnknownChannelError` exception.
 
-> Mumble.channels.get_childs(channel_id)
+> `Mumble.channels.get_childs(channel_id)`
 
 Return a list of all the children objects for a channel id.
 
-> Mumble.channels.get_descendants(channel_id)
+> `Mumble.channels.get_descendants(channel_id)`
 
 Return a (nested) list of the channels above this id.
 
-> Mumble.get_tree(channel_id)
+> `Mumble.get_tree(channel_id)`
 
 Return a nested list of the channel objects above this id.
 
-> Mumble.find_by_name(name)
+> `Mumble.find_by_name(name)`
 
 Return the first channel object matching the name.
 
-## Channel object (accessible through Mumble.channels[channel_id])
+## Channel object (accessible through Mumble.channels[channel_id] or Mumble.channels.find_by_name(Name))
 Contains the properties of the specific channel.
 Allow to move a user into it.
 
-> Channel.get_property(name)
+> `Channel.get_property(name)`
 
 Return the property value for this channel.
 
-> Channel.move_in(session=None)
+> `Channel.move_in(session=None)`
 
 Move (or try to) a user's session into the channel.
 If no session specified, try to move the library application itself.
 
-> Channel.send_message(message)
+> `Channel.send_message(message)`
 
 Send message into the specific channel.
 
 ## SoundOutput object (accessible through Mumble.sound_output)
 Takes care of encoding, packetizing and sending the audio to the server.
 
-> Mumble.sound_output.set_audio_per_packet(float)
+> `Mumble.sound_output.set_audio_per_packet(float)`
 
 Set the duration of one packet of audio in secs. Typically, 0.02 or 0.04. Max is 0.12 (codec limitations).
 
-> Mumble.sound_output.get_audio_per_packet()
+> `Mumble.sound_output.get_audio_per_packet()`
 
 Return the current length of an audio packet in secs.
 
-> Mumble.sound_output.add_sound(string)
+> `Mumble.sound_output.add_sound(string)`
 
 Add PCM sound (16 bites mono 48000Hz little-endian encoded) to the outgoing queue.
 
-> Mumble.sound_output.get_buffer_size()
+> `Mumble.sound_output.get_buffer_size()`
 
 Return in secs the size of the unsent audio buffer. Useful to transfer audio to the library at a regular pace.
+
+> `Mumble.sound_output.set_whisper(<session_id>)`
+
+Set Whisper to an specific User Session-ID
+
+> `Mumble.sound_output.set_whisper([list of session_id])`
+
+Set Whisper to multiple Users
+
+> ``Mumble.sound_output.set_whisper(<channel_id>, channel=True)``
+
+Set Whisper to a specific Channel
+
+> ``Mumble.sound_output.remove_whisper()``
+
+Remove the Whisper previsously set
