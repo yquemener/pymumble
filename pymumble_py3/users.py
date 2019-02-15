@@ -4,7 +4,7 @@ from .errors import TextTooLongError, ImageTooBigError
 from threading import Lock
 from . import soundqueue
 from . import messages
-
+from . import mumble_pb2
 
 class Users(dict):
     """Object that stores and update all connected users"""
@@ -201,7 +201,17 @@ class User(dict):
         cmd = messages.ModUserState(self.mumble_object.users.myself_session, params)
         self.mumble_object.execute_command(cmd)
 
-    def move_in(self, channel_id):
+    def move_in(self, channel_id, token=None):
+        if token:
+            authenticate = mumble_pb2.Authenticate()
+            authenticate.username = self.mumble_object.user
+            authenticate.password = self.mumble_object.password
+            authenticate.tokens.extend(self.mumble_object.tokens)
+            authenticate.tokens.extend([token])
+            authenticate.opus = True
+            self.mumble_object.Log.debug("sending: authenticate: %s", authenticate)
+            self.mumble_object.send_message(PYMUMBLE_MSG_TYPES_AUTHENTICATE, authenticate)
+
         session = self.mumble_object.users.myself_session
         cmd = messages.MoveCmd(session, channel_id)
         self.mumble_object.execute_command(cmd)
