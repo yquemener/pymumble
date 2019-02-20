@@ -222,8 +222,8 @@ class User(dict):
         # TODO: This check should be done inside execute_command()
         # However, this is currently not possible because execute_command() does
         # not actually execute the command.
-        if len(message) > self.mumble_object.get_max_image_length():
-            raise ImageTooBigError(self.mumble_object.get_max_message_length())
+        if len(message) > self.mumble_object.get_max_image_length() != 0:
+            raise ImageTooBigError(self.mumble_object.get_max_image_length())
 
         if not ("<img" in message and "src" in message):
             if len(message) > self.mumble_object.get_max_message_length():
