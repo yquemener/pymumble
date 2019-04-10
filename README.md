@@ -4,7 +4,7 @@ PYMUMBLE python library
 Description
 -----------
 
-This library is a fork of a fork of a fork (initial from https://github.com/Robert904/pymumble). But we will try to make `pymumble` better. So I consider this fork (the [@Azlux](https://github.com/azlux/pymumble) one) the current fork alive of `pymumble`.
+This library is a fork of a fork of a fork (initial from https://github.com/Robert904/pymumble). But we will try to make `pymumble` better. So I consider this fork (the [@Azlux](https://github.com/azlux/pymumble) one) the current alive fork of `pymumble`.
 
 The wiki/API explanation is [HERE](API.md).
 
