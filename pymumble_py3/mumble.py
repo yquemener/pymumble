@@ -460,7 +460,7 @@ class Mumble(threading.Thread):
         sequence = tools.VarInt()  # decode sequence number
         pos += sequence.decode(message[pos:pos + 10])
 
-        self.Log.debug("audio packet received from %i, sequence %i, type:%i, target:%i, lenght:%i", session.value, sequence.value, type, target, len(message))
+        self.Log.debug("audio packet received from %i, sequence %i, type:%i, target:%i, length:%i", session.value, sequence.value, type, target, len(message))
 
         terminator = False  # set to true if it's the last 10 ms audio frame for the packet (used with CELT codec)
         while (pos < len(message)) and not terminator:  # get the audio frames one by one
