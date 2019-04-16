@@ -33,7 +33,7 @@ class Mumble(threading.Thread):
         user=user to use for the connection
         password=password for the connection
         certfile=client certificate to authenticate the connection
-        keyfile=private key comming with client certificate
+        keyfile=private key associated with the client certificate
         reconnect=if True, try to reconnect if disconnected
         tokens=channel access tokens as a list of strings
         debug=if True, send debugging messages (lot of...) to the stdout
@@ -86,17 +86,17 @@ class Mumble(threading.Thread):
         self.control_socket = None
         self.media_socket = None  # Not implemented - for UDP media
 
-        self.bandwidth = PYMUMBLE_BANDWIDTH  # reset the outgoing bandwidth to it's default before connectiong
+        self.bandwidth = PYMUMBLE_BANDWIDTH  # reset the outgoing bandwidth to it's default before connecting
         self.server_max_bandwidth = None
         self.udp_active = False
 
-        # defaults accoring to https://wiki.mumble.info/wiki/Murmur.ini
+        # defaults according to https://wiki.mumble.info/wiki/Murmur.ini
         self.server_allow_html = True
         self.server_max_message_length = 5000
         self.server_max_image_message_length = 131072
 
-        self.users = users.Users(self, self.callbacks)  # contain the server's connected users informations
-        self.channels = channels.Channels(self, self.callbacks)  # contain the server's channels informations
+        self.users = users.Users(self, self.callbacks)  # contains the server's connected users information
+        self.channels = channels.Channels(self, self.callbacks)  # contains the server's channels information
         self.blobs = blobs.Blobs(self)  # manage the blob objects
         self.sound_output = soundoutput.SoundOutput(self, PYMUMBLE_AUDIO_PER_PACKET, self.bandwidth, opus_profile=self.__opus_profile)  # manage the outgoing sounds
         self.commands = commands.Commands()  # manage commands sent between the main and the mumble threads
@@ -111,7 +111,7 @@ class Mumble(threading.Thread):
         while True:
             self.init_connection()  # reset the connection-specific object members
 
-            if self.connect() >= PYMUMBLE_CONN_STATE_FAILED:  # some error occured, exit here
+            if self.connect() >= PYMUMBLE_CONN_STATE_FAILED:  # some error occurred, exit here
                 self.ready_lock.release()
                 break
 

@@ -28,7 +28,7 @@ class CallBacks(dict):
         })
             
     def set_callback(self, callback, dest):
-        """Define the function to call for a specific callback.  Suppress any axisting callback function"""
+        """Define the function to call for a specific callback.  Suppress any existing callback function"""
         if callback not in self:
             raise UnknownCallbackError("Callback \"%s\" does not exists." % callback)
         
