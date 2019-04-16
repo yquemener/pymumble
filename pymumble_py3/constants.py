@@ -22,7 +22,7 @@ PYMUMBLE_VERSION_STRING = "PyMumble %s" % PYMUMBLE_VERSION
 PYMUMBLE_OS_STRING = "PyMumble %s" % PYMUMBLE_VERSION
 PYMUMBLE_OS_VERSION_STRING = "Python %s - %s %s" % (sys.version, platform.system(), platform.release())
 
-PYMUMBLE_PING_DELAY = 10  # interval betwen 2 pings in sec
+PYMUMBLE_PING_DELAY = 10  # interval between 2 pings in sec
 
 PYMUMBLE_SAMPLERATE = 48000  # in hz
 

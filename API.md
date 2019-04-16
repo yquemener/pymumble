@@ -276,4 +276,4 @@ Set Whisper to a specific Channel
 
 > ``Mumble.sound_output.remove_whisper()``
 
-Remove the Whisper previsously set
+Remove the previously set Whisper

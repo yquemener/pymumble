@@ -18,7 +18,7 @@ class Users(dict):
         self.lock = Lock()
 
     def update(self, message):
-        """Update a user informations, based in an incoming message"""
+        """Update a user information, based on the incoming message"""
         self.lock.acquire()
 
         if message.session not in self:

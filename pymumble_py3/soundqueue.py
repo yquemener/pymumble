@@ -120,7 +120,7 @@ class SoundChunk:
         self.target = target  # target of the audio
         
     def extract_sound(self, duration):
-        """Extract part of the chunk, leaving a vilid chunk for the remaining part"""
+        """Extract part of the chunk, leaving a valid chunk for the remaining part"""
         size = int(duration*2*PYMUMBLE_SAMPLERATE)
         result = SoundChunk(
                         self.pcm[:size],

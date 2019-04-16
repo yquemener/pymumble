@@ -17,7 +17,7 @@ class Channels(dict):
         self.lock = Lock()
 
     def update(self, message):
-        """Update the channel informations based on an incoming message"""
+        """Update the channel information based on an incoming message"""
         self.lock.acquire()
 
         if message.channel_id not in self:  # create the channel
@@ -62,7 +62,7 @@ class Channels(dict):
         return current
 
     def get_childs(self, channel):
-        """Get the childs of a channel in a list"""
+        """Get the child channels of a channel in a list"""
         childs = list()
 
         for item in self.values():
@@ -81,7 +81,7 @@ class Channels(dict):
         return descendants
 
     def get_tree(self, channel):
-        """Get the whole list of channels, in a multidimensionnal list"""
+        """Get the whole list of channels, in a multidimensional list"""
         tree = list()
 
         current = channel
@@ -113,7 +113,7 @@ class Channels(dict):
 
 class Channel(dict):
     """
-    Stores informations about one specific channel
+    Stores information about one specific channel
     """
 
     def __init__(self, mumble_object, message):

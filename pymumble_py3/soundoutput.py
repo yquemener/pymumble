@@ -15,7 +15,7 @@ from .messages import VoiceTarget
 class SoundOutput:
     """
     Class managing the sounds that must be sent to the server (best sent in a multiple of audio_per_packet samples)
-    The buffering is the responsability of the caller, any partial sound will be sent without delay
+    The buffering is the responsibility of the caller, any partial sound will be sent without delay
     """
 
     def __init__(self, mumble_object, audio_per_packet, bandwidth, opus_profile=PYMUMBLE_AUDIO_TYPE_OPUS_PROFILE):
