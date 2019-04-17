@@ -139,7 +139,7 @@ Set the comment for this user.
 
 Set the image for this user (must be a format recognized by the Mumble clients. PNG seems to work, I had issues with SVG).
 
-> `user.send_message(message)`
+> `user.send_text_message(message)`
 
 Send a message to the specific user.
 
@@ -239,7 +239,7 @@ Return the property value for this channel.
 Move (or try to) a user's session into the channel.
 If no session specified, try to move the library application itself.
 
-> `Channel.send_message(message)`
+> `Channel.send_text_message(message)`
 
 Send message into the specific channel.
 

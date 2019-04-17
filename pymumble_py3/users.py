@@ -216,7 +216,7 @@ class User(dict):
         cmd = messages.MoveCmd(session, channel_id)
         self.mumble_object.execute_command(cmd)
 
-    def send_message(self, message):
+    def send_text_message(self, message):
         """Send a text message to the user."""
 
         # TODO: This check should be done inside execute_command()

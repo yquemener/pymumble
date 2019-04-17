@@ -10,6 +10,9 @@ The wiki/API explanation is [HERE](API.md).
 
 The **Python 2** version is available in the [master branch](https://github.com/azlux/pymumble/tree/master). It's working! But since we have moved on to Python 3, the Python 2 version will not receive future improvements.
 
+## CHANGELOG
+The changelog is available on the release note.
+
 List of applications using `pymumble`
 -----
 For a client application example, you can check this list :
