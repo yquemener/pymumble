@@ -46,6 +46,11 @@ Return the current `loop_rate`.
 By default, incoming sound is not treated. If you plan to use the incoming audio, you must set this to `True`,
 but then you have to get the audio out of the library regularly otherwise it will simply consume memory.
 
+> `Mumble.my_channel()`
+
+This function return the channel the bot is located. It's a Channel Object.
+It's a shortcut for `self.channels[self.users.myself["channel_id"]`
+
 ## Callbacks object (accessible through Mumble.callbacks)
 Manage the different available callbacks.
 It is basically a `dict` of the available callbacks and the methods to manage them.

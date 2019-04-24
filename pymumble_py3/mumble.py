@@ -636,3 +636,6 @@ class Mumble(threading.Thread):
 
     def get_max_image_length(self):
         return self.server_max_image_message_length
+
+    def my_channel(self):
+        return self.channels[self.users.myself["channel_id"]]
