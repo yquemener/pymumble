@@ -248,6 +248,10 @@ If no session specified, try to move the library application itself.
 
 Send message into the specific channel.
 
+> `Channel.get_users()`
+
+List all users currently in channel.
+
 ## SoundOutput object (accessible through Mumble.sound_output)
 Takes care of encoding, packetizing and sending the audio to the server.
 
