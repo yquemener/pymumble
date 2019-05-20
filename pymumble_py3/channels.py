@@ -121,6 +121,13 @@ class Channel(dict):
         self["channel_id"] = message.channel_id
         self.update(message)
 
+    def get_users(self):
+        users = []
+        for user in self.mumble_object.users.values():
+            if user["channel_id"] == self["channel_id"]:
+                users.append(user)
+        return users
+
     def update(self, message):
         """Update a channel based on an incoming message"""
         actions = dict()
