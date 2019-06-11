@@ -251,6 +251,7 @@ Send message into the specific channel.
 > `Channel.get_users()`
 
 List all users currently in channel.
+After moving into a channel, it's normal to not have the list of user. Pymumble need few ms to update the list.
 
 ## SoundOutput object (accessible through Mumble.sound_output)
 Takes care of encoding, packetizing and sending the audio to the server.
