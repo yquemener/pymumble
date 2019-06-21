@@ -223,6 +223,10 @@ Return a list of all the children objects for a channel id.
 
 Return a (nested) list of the channels above this id.
 
+> `Mumble.channels.remove_channel(channel_id)`
+
+Remove channel with the given id.
+
 > `Mumble.get_tree(channel_id)`
 
 Return a nested list of the channel objects above this id.
@@ -243,6 +247,10 @@ Return the property value for this channel.
 
 Move (or try to) a user's session into the channel.
 If no session specified, try to move the library application itself.
+
+> `Channel.remove()`
+
+Remove the given channel.
 
 > `Channel.send_text_message(message)`
 

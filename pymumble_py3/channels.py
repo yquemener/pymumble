@@ -110,6 +110,10 @@ class Channels(dict):
         cmd = messages.CreateChannel(parent, name, temporary)
         self.mumble_object.execute_command(cmd)
 
+    def remove_channel(self, channel_id):
+        cmd = messages.RemoveChannel(channel_id)
+        self.mumble_object.execute_command(cmd)
+
 
 class Channel(dict):
     """
@@ -163,6 +167,10 @@ class Channel(dict):
             session = self.mumble_object.users.myself_session
 
         cmd = messages.MoveCmd(session, self["channel_id"])
+        self.mumble_object.execute_command(cmd)
+
+    def remove(self):
+        cmd = messages.RemoveChannel(self["channel_id"])
         self.mumble_object.execute_command(cmd)
 
     def send_text_message(self, message):
