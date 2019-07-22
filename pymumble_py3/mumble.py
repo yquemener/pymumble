@@ -589,6 +589,12 @@ class Mumble(threading.Thread):
             self.send_message(PYMUMBLE_MSG_TYPES_CHANNELSTATE, channelstate)
             cmd.response = True
             self.commands.answer(cmd)
+        elif cmd.cmd == PYMUMBLE_MSG_TYPES_CHANNELREMOVE:
+            channelremove = mumble_pb2.ChannelRemove()
+            channelremove.channel_id = cmd.parameters["channel_id"]
+            self.send_message(PYMUMBLE_MSG_TYPES_CHANNELREMOVE, channelremove)
+            cmd.response = True
+            self.commands.answer(cmd)
         elif cmd.cmd == PYMUMBLE_MSG_TYPES_VOICETARGET:
             textvoicetarget = mumble_pb2.VoiceTarget()
             textvoicetarget.id = cmd.parameters["id"]
