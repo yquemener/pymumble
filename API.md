@@ -148,6 +148,10 @@ Set the image for this user (must be a format recognized by the Mumble clients. 
 
 Send a message to the specific user.
 
+> `user.register()`
+
+Send a register demand to the murmur server (you need to have a certfile
+
 ## SoundQueue object (accessible through User.sound)
 Contains the audio received from a specific user.
 Take care of the decoding and keep track on the timing of the reception.

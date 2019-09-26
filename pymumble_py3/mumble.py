@@ -632,6 +632,8 @@ class Mumble(threading.Thread):
                 userstate.comment = cmd.parameters["comment"]
             if "texture" in cmd.parameters:
                 userstate.texture = cmd.parameters["texture"]
+            if "user_id" in cmd.parameters:
+                userstate.user_id = cmd.parameters["user_id"]
 
             self.send_message(PYMUMBLE_MSG_TYPES_USERSTATE, userstate)
             cmd.response = True
