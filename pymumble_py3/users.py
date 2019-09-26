@@ -207,7 +207,6 @@ class User(dict):
                   "user_id": 0}
  
         cmd = messages.ModUserState(self.mumble_object.users.myself_session, params)
-        print(cmd.parameters)
         self.mumble_object.execute_command(cmd)
 
     def move_in(self, channel_id, token=None):
