@@ -127,7 +127,7 @@ class Channel(dict):
 
     def get_users(self):
         users = []
-        for user in self.mumble_object.users.values():
+        for user in list(self.mumble_object.users.values()):
             if user["channel_id"] == self["channel_id"]:
                 users.append(user)
         return users
