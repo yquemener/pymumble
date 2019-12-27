@@ -113,6 +113,7 @@ class Mumble(threading.Thread):
 
             if self.connect() >= PYMUMBLE_CONN_STATE_FAILED:  # some error occurred, exit here
                 self.ready_lock.release()
+                raise ConnectionRejectedError ("Connection error with the Mumble (murmur) Server")
                 break
 
             try:
