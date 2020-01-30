@@ -75,8 +75,8 @@ class Channels(dict):
         """Get all the descendant of a channel, in nested lists"""
         descendants = list()
 
-        for subchannel in channel.get_childs():
-            descendants.append(subchannel.get_childs())
+        for subchannel in self.get_childs(channel):
+            descendants.append(self.get_childs(subchannel))
 
         return descendants
 
