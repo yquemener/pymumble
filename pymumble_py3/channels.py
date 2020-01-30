@@ -49,7 +49,7 @@ class Channels(dict):
 
         for name in tree:  # going up the tree
             found = False
-            for subchannel in self.get_childs(current).values():
+            for subchannel in self.get_childs(current):
                 if subchannel["name"] == name:
                     current = subchannel
                     found = True
