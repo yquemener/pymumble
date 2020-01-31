@@ -21,7 +21,7 @@ For client application examples, you can check this list :
 
 ## Status
 ### Currently implemented:
-- Compatible with Mumble 1.2.4 and normally 1.2.3 and 1.2.2
+- Compatible with Mumble 1.3 and normally until 1.2.2
 - Support OPUS. Speex is not supported
 - Receive and send audio, get users and channels status
 - Set properties for users (mute, comments, etc.) and go to a specific channel
@@ -29,6 +29,7 @@ For client application examples, you can check this list :
 - Manage the blobs (images, long comments, etc.)
 - Can send text messages to user and channel
 - Ping statistics
+- Audio targets (whisper, etc.)
 
 ### What is missing:
 >  I don't need these features, so if you want one, open an issue and I will work on it.
@@ -36,7 +37,6 @@ For client application examples, you can check this list :
 - UDP media. Currently it works only in TCP tunneling mode (the standard fallback of Mumble when UDP is not working)
 - Server management (user creation and registration, ACLs, groups, bans, etc.)
 - Positioning is not managed, but it should be easy to add
-- Audio targets (whisper, etc.) is not managed in outgoing audio, and has very basic support in incoming
 - Probably a lot of other small features
 
 ## Architecture
