@@ -234,7 +234,7 @@ class User(dict):
             raise ImageTooBigError(self.mumble_object.get_max_image_length())
 
         if not ("<img" in message and "src" in message):
-            if len(message) > self.mumble_object.get_max_message_length():
+            if len(message) > self.mumble_object.get_max_message_length() != 0:
                 raise TextTooLongError(self.mumble_object.get_max_message_length())
 
         cmd = messages.TextPrivateMessage(self["session"], message)
