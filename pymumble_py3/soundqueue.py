@@ -58,7 +58,7 @@ class SoundQueue:
 
             newsound = SoundChunk(pcm, sequence, len(pcm), calculated_time, type, target)
 
-            if self.mumble_object.callbacks.get_callback(PYMUMBLE_CLBK_SOUNDRECEIVED):
+            if not self.mumble_object.callbacks.get_callback(PYMUMBLE_CLBK_SOUNDRECEIVED):
                 self.queue.appendleft(newsound)
 
                 if len(self.queue) > 1 and self.queue[0].time < self.queue[1].time:
