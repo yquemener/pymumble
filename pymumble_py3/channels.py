@@ -66,7 +66,7 @@ class Channels(dict):
         childs = list()
 
         for item in self.values():
-            if item.get('parent') and item["parent"] == channel["channel_id"]:
+            if item.get('parent') is not None and item["parent"] == channel["channel_id"]:
                 childs.append(item)
 
         return childs
