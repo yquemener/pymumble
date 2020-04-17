@@ -122,8 +122,10 @@ class Mumble(threading.Thread):
                 self.connected = PYMUMBLE_CONN_STATE_NOT_CONNECTED
 
             if not self.reconnect or not self.parent_thread.is_alive():
+                self.callbacks(PYMUMBLE_CLBK_DISCONNECTED)
                 break
 
+            self.callbacks(PYMUMBLE_CLBK_DISCONNECTED)
             time.sleep(PYMUMBLE_CONNECTION_RETRY_INTERVAL)
 
     def connect(self):

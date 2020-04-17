@@ -57,6 +57,7 @@ It is basically a `dict` of the available callbacks and the methods to manage th
 
 Callback names are in `pymumble.constants` module, starting with `PYMUMBLE_CLBK_`
 - `PYMUMBLE_CLBK_CONNECTED`: connection succeeded
+- `PYMUMBLE_CLBK_DISCONNECTED`: Connection as been dropped
 - `PYMUMBLE_CLBK_CHANNELCREATED`: send the created channel object as parameter
 - `PYMUMBLE_CLBK_CHANNELUPDATED`: send the updated channel object and a dict with all the modified fields as parameter
 - `PYMUMBLE_CLBK_CHANNELREMOVED`: send the removed channel object as parameter
