@@ -232,11 +232,11 @@ Return a (nested) list of the channels above this id.
 
 Remove channel with the given id.
 
-> `Mumble.get_tree(channel_id)`
+> `Mumble.channels.get_tree(channel_id)`
 
 Return a nested list of the channel objects above this id.
 
-> `Mumble.find_by_name(name)`
+> `Mumble.channels.find_by_name(name)`
 
 Return the first channel object matching the name.
 
