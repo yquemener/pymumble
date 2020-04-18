@@ -136,6 +136,7 @@ class Mumble(threading.Thread):
         # Connect the SSL tunnel
         self.Log.debug("connecting to %s (%s) on port %i.", self.host, server_info[0][1], self.port)
         std_sock = socket.socket(server_info[0][0], socket.SOCK_STREAM)
+        std_sock.settimeout(10)
 
         try:
             self.control_socket = ssl.wrap_socket(std_sock, certfile=self.certfile, keyfile=self.keyfile, ssl_version=ssl.PROTOCOL_TLS)
