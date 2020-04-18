@@ -496,6 +496,9 @@ class Mumble(threading.Thread):
                                                                    type,
                                                                    target)  # add the sound to the user's sound queue
 
+                    if newsound is None: # In case audio have been disable for specific users
+                        return
+                    
                     self.callbacks(PYMUMBLE_CLBK_SOUNDRECEIVED, self.users[session.value], newsound)
 
                     sequence.value += int(round(newsound.duration / 1000 * 10))  # add 1 sequence per 10ms of audio
