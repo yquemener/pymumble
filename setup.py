@@ -1,23 +1,27 @@
-from distutils.core import setup
+from setuptools import setup, find_packages
+
+with open("README.md", "r") as fh:
+    long_description = fh.read()
+
+with open("requirements.txt") as f:
+    requirements = f.read().splitlines()
 
 setup(
     name="pymumble",
-    description="Python 3 version of pymumble, Mumble library used for multiple uses like making mumble bot.",
-    version='0.3.1',
-    author='Robert Hendrickx',
-    author_email='rober@percu.be',
-    maintainer='Azlux',
-    maintainer_email='azlux@outlook.com',
+    version='1.1.0',
+    author='Azlux',
+    author_email='github@azlux.fr',
+    description="Mumble library used for multiple uses like making mumble bot.",
+    long_description=long_description,
+    long_description_content_type="text/markdown"
     url='https://github.com/azlux/pymumble',
     license='GPLv3',
-    packages=['pymumble_py3'],
-    download_url='https://github.com/azlux/pymumble/archive/pymumble_py3.zip',
-    classifiers=['Development Status :: 3 - Alpha',
-                 'Intended Audience :: Developers',
-                 'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
-                 'Programming Language :: Python :: 3',
-                 'Programming Language :: Python :: 3.3',
-                 'Programming Language :: Python :: 3.4',
-                 'Programming Language :: Python :: 3.5',
-                 'Programming Language :: Python :: 3.6',]
+    packages=find_packages(),
+    install_requires=requirements,
+    include_package_data=True,
+    classifiers=["Programming Language :: Python :: 3",
+                 "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+                 "Operating System :: OS Independent",
+                 ],
+    python_requires='>=3.6',
 )
