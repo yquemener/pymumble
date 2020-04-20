@@ -1,7 +1,7 @@
 # PYMUMBLE python library
 
 ## Description
-This library act as a mumble client, connecting to a murmur server, exchanging states and audio.
+This library acts as a mumble client, connecting to a murmur server, exchanging states and audio.
 
 The wiki/API explanation is [HERE](https://github.com/azlux/pymumble/blob/pymumble_py3/API.md).
 
