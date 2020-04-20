@@ -14,7 +14,7 @@ setup(
     author_email='github@azlux.fr',
     description="Mumble library used for multiple uses like making mumble bot.",
     long_description=long_description,
-    long_description_content_type="text/markdown"
+    long_description_content_type="text/markdown",
     url='https://github.com/azlux/pymumble',
     license='GPLv3',
     packages=find_packages(),
