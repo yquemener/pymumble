@@ -17,6 +17,8 @@ The wiki/API explanation is [HERE](https://github.com/azlux/pymumble/blob/pymumb
 - `pip3 install -r requirements.txt`
 - You need to `import pymumble_py3 as pymumble` into your code.
 
+Deployement script is available [here](https://packages.azlux.fr/scripts/pymumble.txt)
+
 ### With git
 
 - `git clone https://github.com/azlux/pymumble.git`
