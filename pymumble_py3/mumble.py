@@ -179,11 +179,12 @@ class Mumble(threading.Thread):
         check for disconnection
         """
         self.Log.debug("entering loop")
+        self.exit = False
 
         last_ping = time.time()  # keep track of the last ping time
 
         # loop as long as the connection and the parent thread are alive
-        while self.connected not in (PYMUMBLE_CONN_STATE_NOT_CONNECTED, PYMUMBLE_CONN_STATE_FAILED) and self.parent_thread.is_alive():
+        while self.connected not in (PYMUMBLE_CONN_STATE_NOT_CONNECTED, PYMUMBLE_CONN_STATE_FAILED) and self.parent_thread.is_alive() and not self.exit:
             if last_ping + PYMUMBLE_PING_DELAY <= time.time():  # when it is time, send the ping
                 self.ping()
                 last_ping = time.time()
@@ -656,3 +657,8 @@ class Mumble(threading.Thread):
 
     def my_channel(self):
         return self.channels[self.users.myself["channel_id"]]
+    
+    def stop(self):
+        self.reconnect = None
+        self.exit = True
+        self.control_socket.close()

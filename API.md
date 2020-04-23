@@ -51,6 +51,10 @@ but then you have to get the audio out of the library regularly otherwise it wil
 This function return the channel the bot is located. It's a Channel Object.
 It's a shortcut for `self.channels[self.users.myself["channel_id"]`
 
+> `Mumble.stop()`
+
+This function ask Mumble to disconnect from the server manually.
+
 ## Callbacks object (accessible through Mumble.callbacks)
 Manage the different available callbacks.
 It is basically a `dict` of the available callbacks and the methods to manage them.
