@@ -14,7 +14,6 @@ The wiki/API explanation is [HERE](https://github.com/azlux/pymumble/blob/pymumb
 ### With pip
 
 - `pip install pymumble_py3`
-- `pip3 install -r requirements.txt`
 - You need to `import pymumble_py3 as pymumble` into your code.
 
 [![PyPI version](https://badge.fury.io/py/pymumble.svg)](https://badge.fury.io/py/pymumble)   Deployement script is available [here](https://packages.azlux.fr/scripts/pymumble.txt)
@@ -22,6 +21,7 @@ The wiki/API explanation is [HERE](https://github.com/azlux/pymumble/blob/pymumb
 ### With git
 
 - `git clone https://github.com/azlux/pymumble.git`
+- `pip3 install -r requirements.txt`
 - You need to `import pymumble.pymumble_py3 as pymumble` into your code.
 - It's will be the same if you use a git sub-module
 
