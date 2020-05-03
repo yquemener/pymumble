@@ -63,7 +63,6 @@ class Mumble(threading.Thread):
         self.certfile = certfile
         self.keyfile = keyfile
         self.reconnect = reconnect
-        self.ping_stats = {"last_rcv": 0, "time_send": 0, "nb": 0, "avg": 40.0, "var": 0.0}
         self.tokens = tokens
         self.__opus_profile = PYMUMBLE_AUDIO_TYPE_OPUS_PROFILE
 
@@ -102,6 +101,7 @@ class Mumble(threading.Thread):
         self.commands = commands.Commands()  # manage commands sent between the main and the mumble threads
 
         self.receive_buffer = bytes()  # initialize the control connection input buffer
+        self.ping_stats = {"last_rcv": 0, "time_send": 0, "nb": 0, "avg": 40.0, "var": 0.0} # Set / reset ping stats
 
     def run(self):
         """Connect to the server and start the loop in its thread.  Retry if requested"""
