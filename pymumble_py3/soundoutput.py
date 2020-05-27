@@ -18,7 +18,7 @@ class SoundOutput:
     The buffering is the responsibility of the caller, any partial sound will be sent without delay
     """
 
-    def __init__(self, mumble_object, audio_per_packet, bandwidth, opus_profile=PYMUMBLE_AUDIO_TYPE_OPUS_PROFILE):
+    def __init__(self, mumble_object, audio_per_packet, bandwidth, stereo=False, opus_profile=PYMUMBLE_AUDIO_TYPE_OPUS_PROFILE):
         """
         audio_per_packet=packet audio duration in sec
         bandwidth=maximum total outgoing bandwidth
@@ -34,6 +34,7 @@ class SoundOutput:
         self.encoder = None  # codec instance currently used to encode
         self.encoder_framesize = None  # size of an audio frame for the current codec (OPUS=audio_per_packet, CELT=0.01s)
         self.opus_profile = opus_profile
+        self.channels = 1 if not stereo else 2
 
         self.set_audio_per_packet(audio_per_packet)
         self.set_bandwidth(bandwidth)
@@ -50,7 +51,7 @@ class SoundOutput:
         if not self.encoder or len(self.pcm) == 0:  # no codec configured or no audio sent
             return ()
 
-        samples = int(self.encoder_framesize * PYMUMBLE_SAMPLERATE * 2)  # number of samples in an encoder frame
+        samples = int(self.encoder_framesize * PYMUMBLE_SAMPLERATE * 2 * self.channels)  # number of samples in an encoder frame
 
         while len(self.pcm) > 0 and self.sequence_last_time + self.audio_per_packet <= time():  # audio to send and time to send it (since last packet)
             current_time = time()
@@ -78,7 +79,7 @@ class SoundOutput:
                     to_encode += b'\x00' * (samples - len(to_encode))
 
                 try:
-                    encoded = self.encoder.encode(to_encode, len(to_encode) // 2)
+                    encoded = self.encoder.encode(to_encode, len(to_encode) // (2 * self.channels))
                 except opuslib.exceptions.OpusError:
                     encoded = b''
 
@@ -151,11 +152,11 @@ class SoundOutput:
             self.encoder.bitrate = self.bandwidth - overhead_per_second
 
     def add_sound(self, pcm):
-        """add sound to be sent (in PCM mono 16 bits signed format)"""
+        """add sound to be sent (in PCM 16 bits signed format)"""
         if len(pcm) % 2 != 0:  # check that the data is align on 16 bits
-            raise Exception("pcm data must be mono 16 bits")
+            raise Exception("pcm data must be 16 bits")
 
-        samples = int(self.encoder_framesize * PYMUMBLE_SAMPLERATE * 2)  # number of samples in an encoder frame
+        samples = int(self.encoder_framesize * PYMUMBLE_SAMPLERATE * 2 * self.channels)  # number of samples in an encoder frame
 
         self.lock.acquire()
         if len(self.pcm) and len(self.pcm[-1]) < samples:
@@ -174,7 +175,7 @@ class SoundOutput:
 
     def get_buffer_size(self):
         """return the size of the unsent buffer in sec"""
-        return sum(len(chunk) for chunk in self.pcm) / 2. / PYMUMBLE_SAMPLERATE
+        return sum(len(chunk) for chunk in self.pcm) / 2. / PYMUMBLE_SAMPLERATE / self.channels
 
     def set_default_codec(self, codecversion):
         """Set the default codec to be used to send packets"""
@@ -187,7 +188,7 @@ class SoundOutput:
             return ()
 
         if self.codec.opus:
-            self.encoder = opuslib.Encoder(PYMUMBLE_SAMPLERATE, 1, self.opus_profile)
+            self.encoder = opuslib.Encoder(PYMUMBLE_SAMPLERATE, self.channels, self.opus_profile)
             self.encoder_framesize = self.audio_per_packet
             self.codec_type = PYMUMBLE_AUDIO_TYPE_OPUS
         else:
