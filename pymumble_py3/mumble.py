@@ -26,7 +26,7 @@ class Mumble(threading.Thread):
     basically a thread
     """
 
-    def __init__(self, host, user, port=64738, password='', certfile=None, keyfile=None, reconnect=False, tokens=[], debug=False):
+    def __init__(self, host, user, port=64738, password='', certfile=None, keyfile=None, reconnect=False, tokens=[], stereo=False,debug=False):
         """
         host=mumble server hostname or address
         port=mumble server port
@@ -36,6 +36,7 @@ class Mumble(threading.Thread):
         keyfile=private key associated with the client certificate
         reconnect=if True, try to reconnect if disconnected
         tokens=channel access tokens as a list of strings
+        stereo=enable stereo transmission
         debug=if True, send debugging messages (lot of...) to the stdout
         """
         # TODO: use UDP audio
@@ -65,6 +66,9 @@ class Mumble(threading.Thread):
         self.reconnect = reconnect
         self.tokens = tokens
         self.__opus_profile = PYMUMBLE_AUDIO_TYPE_OPUS_PROFILE
+        self.stereo = stereo
+
+        print(f"==== STEREO {stereo} ====")
 
         self.receive_sound = False  # set to True to treat incoming audio, otherwise it is simply ignored
 
@@ -97,7 +101,7 @@ class Mumble(threading.Thread):
         self.users = users.Users(self, self.callbacks)  # contains the server's connected users information
         self.channels = channels.Channels(self, self.callbacks)  # contains the server's channels information
         self.blobs = blobs.Blobs(self)  # manage the blob objects
-        self.sound_output = soundoutput.SoundOutput(self, PYMUMBLE_AUDIO_PER_PACKET, self.bandwidth, opus_profile=self.__opus_profile)  # manage the outgoing sounds
+        self.sound_output = soundoutput.SoundOutput(self, PYMUMBLE_AUDIO_PER_PACKET, self.bandwidth, stereo=self.stereo ,opus_profile=self.__opus_profile)  # manage the outgoing sounds
         self.commands = commands.Commands()  # manage commands sent between the main and the mumble threads
 
         self.receive_buffer = bytes()  # initialize the control connection input buffer
