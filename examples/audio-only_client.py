@@ -29,7 +29,7 @@ import subprocess as sp
 from time import sleep
 import pyaudio
 
-# Connection details for mumble server. Harded code for now, will have to be
+# Connection details for mumble server. Hardcoded for now, will have to be
 # command line arguments eventually
 pwd = ""  # password
 server = "sf.guildbit.com"  # server address

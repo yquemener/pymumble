@@ -6,6 +6,7 @@ from . import soundqueue
 from . import messages
 from . import mumble_pb2
 
+
 class Users(dict):
     """Object that stores and update all connected users"""
 

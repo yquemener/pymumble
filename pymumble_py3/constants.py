@@ -11,8 +11,8 @@ PYMUMBLE_VERSION = "1.1"
 PYMUMBLE_CONNECTION_RETRY_INTERVAL = 10  # in sec
 PYMUMBLE_AUDIO_PER_PACKET = float(20)/1000  # size of one audio packet in sec
 PYMUMBLE_BANDWIDTH = 50 * 1000  # total outgoing bitrate in bit/seconds
-PYMUMBLE_LOOP_RATE = 0.01  # pause done between two iteration of the main loop of the mumble thread, in sec
-                           # should be small enough to manage the audio output, so smaller than PYMUMBLE_AUDIO_PER_PACKET
+PYMUMBLE_LOOP_RATE = 0.01   # pause done between two iteration of the main loop of the mumble thread, in sec
+                            # should be small enough to manage the audio output, so smaller than PYMUMBLE_AUDIO_PER_PACKET
 
 # ============================================================================
 # Constants

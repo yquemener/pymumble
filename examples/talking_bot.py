@@ -5,7 +5,7 @@
 import pymumble_py3
 import subprocess as sp
 try:
-    import readline # optional
+    import readline  # optional
 except ImportError:
     pass
 
@@ -19,11 +19,11 @@ s = " "
 while s:
     s = input(") ") 
     # converting text to speech
-    command = ["espeak","--stdout", s]
+    command = ["espeak", "--stdout", s]
     wave_file = sp.Popen(command, stdout=sp.PIPE).stdout
     # converting the wave speech to pcm
-    command = ["ffmpeg", "-i", "-", "-ac", "1", "-f", "s32le","-"] 
+    command = ["ffmpeg", "-i", "-", "-ac", "1", "-f", "s32le", "-"]
     sound = sp.Popen(command, stdout=sp.PIPE, stderr=sp.DEVNULL,
-    stdin=wave_file).stdout.read()
+                     stdin=wave_file).stdout.read()
     # sending speech to server
     mumble.sound_output.add_sound(sound)

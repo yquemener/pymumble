@@ -16,8 +16,7 @@ class VarInt:
         """Encode an integer in the VarInt format, returning a binary string"""
         result = bytearray()
         value = abs(self.value)
-        
-        
+
         if self.value < 0:
             if self.value >= -3:
                 return struct.pack("!B", (0b11111100 | value))
