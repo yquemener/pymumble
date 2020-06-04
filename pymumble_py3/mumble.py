@@ -26,7 +26,7 @@ class Mumble(threading.Thread):
     basically a thread
     """
 
-    def __init__(self, host, user, port=64738, password='', certfile=None, keyfile=None, reconnect=False, tokens=[], stereo=False, debug=False):
+    def __init__(self, host, user, port=64738, password='', certfile=None, keyfile=None, reconnect=False, tokens=None, stereo=False, debug=False):
         """
         host=mumble server hostname or address
         port=mumble server port
@@ -42,6 +42,8 @@ class Mumble(threading.Thread):
         # TODO: use UDP audio
         threading.Thread.__init__(self)
 
+        if tokens is None:
+            tokens = []
         self.Log = logging.getLogger("PyMumble")  # logging object for errors and debugging
         if debug:
             self.Log.setLevel(logging.DEBUG)
@@ -119,7 +121,6 @@ class Mumble(threading.Thread):
                 self.ready_lock.release()
                 if not self.reconnect or not self.parent_thread.is_alive():
                     raise ConnectionRejectedError("Connection error with the Mumble (murmur) Server")
-                    break
                 else:
                     time.sleep(PYMUMBLE_CONNECTION_RETRY_INTERVAL)
                     continue
@@ -152,7 +153,7 @@ class Mumble(threading.Thread):
             self.control_socket = ssl.wrap_socket(std_sock, certfile=self.certfile, keyfile=self.keyfile, ssl_version=ssl.PROTOCOL_TLSv1)
         try:
             self.control_socket.connect((self.host, self.port))
-            self.control_socket.setblocking(0)
+            self.control_socket.setblocking(False)
 
             # Perform the Mumble authentication
             version = mumble_pb2.Version()

@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import struct
-import builtins
 
 
 class InvalidVarInt(Exception):

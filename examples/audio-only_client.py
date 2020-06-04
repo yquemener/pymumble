@@ -25,8 +25,6 @@
 
 import pymumble.pymumble_py3 as pymumble_py3
 from pymumble.pymumble_py3.callbacks import PYMUMBLE_CLBK_SOUNDRECEIVED as PCS
-import subprocess as sp
-from time import sleep
 import pyaudio
 
 # Connection details for mumble server. Hardcoded for now, will have to be
