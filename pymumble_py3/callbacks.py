@@ -16,7 +16,7 @@ class CallBacks(dict):
     def __init__(self):
         self.update({
             PYMUMBLE_CLBK_CONNECTED: None,  # Connection succeeded
-            PYMUMBLE_CLBK_DISCONNECTED: None, # Connection as been dropped
+            PYMUMBLE_CLBK_DISCONNECTED: None,  # Connection as been dropped
             PYMUMBLE_CLBK_CHANNELCREATED: None,  # send the created channel object as parameter
             PYMUMBLE_CLBK_CHANNELUPDATED: None,  # send the updated channel object and a dict with all the modified fields as parameter
             PYMUMBLE_CLBK_CHANNELREMOVED: None,  # send the removed channel object as parameter

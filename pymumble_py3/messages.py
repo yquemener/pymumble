@@ -73,6 +73,7 @@ class CreateChannel(Cmd):
                            "name": name,
                            "temporary": temporary}
 
+
 class RemoveChannel(Cmd):
     """Command to create channel"""
 

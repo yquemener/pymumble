@@ -26,7 +26,7 @@ class Mumble(threading.Thread):
     basically a thread
     """
 
-    def __init__(self, host, user, port=64738, password='', certfile=None, keyfile=None, reconnect=False, tokens=[], stereo=False,debug=False):
+    def __init__(self, host, user, port=64738, password='', certfile=None, keyfile=None, reconnect=False, tokens=None, stereo=False, debug=False):
         """
         host=mumble server hostname or address
         port=mumble server port
@@ -42,6 +42,8 @@ class Mumble(threading.Thread):
         # TODO: use UDP audio
         threading.Thread.__init__(self)
 
+        if tokens is None:
+            tokens = []
         self.Log = logging.getLogger("PyMumble")  # logging object for errors and debugging
         if debug:
             self.Log.setLevel(logging.DEBUG)
@@ -101,11 +103,11 @@ class Mumble(threading.Thread):
         self.users = users.Users(self, self.callbacks)  # contains the server's connected users information
         self.channels = channels.Channels(self, self.callbacks)  # contains the server's channels information
         self.blobs = blobs.Blobs(self)  # manage the blob objects
-        self.sound_output = soundoutput.SoundOutput(self, PYMUMBLE_AUDIO_PER_PACKET, self.bandwidth, stereo=self.stereo ,opus_profile=self.__opus_profile)  # manage the outgoing sounds
+        self.sound_output = soundoutput.SoundOutput(self, PYMUMBLE_AUDIO_PER_PACKET, self.bandwidth, stereo=self.stereo, opus_profile=self.__opus_profile)  # manage the outgoing sounds
         self.commands = commands.Commands()  # manage commands sent between the main and the mumble threads
 
         self.receive_buffer = bytes()  # initialize the control connection input buffer
-        self.ping_stats = {"last_rcv": 0, "time_send": 0, "nb": 0, "avg": 40.0, "var": 0.0} # Set / reset ping stats
+        self.ping_stats = {"last_rcv": 0, "time_send": 0, "nb": 0, "avg": 40.0, "var": 0.0}  # Set / reset ping stats
 
     def run(self):
         """Connect to the server and start the loop in its thread.  Retry if requested"""
@@ -118,8 +120,7 @@ class Mumble(threading.Thread):
             if self.connect() >= PYMUMBLE_CONN_STATE_FAILED:  # some error occurred, exit here
                 self.ready_lock.release()
                 if not self.reconnect or not self.parent_thread.is_alive():
-                    raise ConnectionRejectedError ("Connection error with the Mumble (murmur) Server")
-                    break
+                    raise ConnectionRejectedError("Connection error with the Mumble (murmur) Server")
                 else:
                     time.sleep(PYMUMBLE_CONNECTION_RETRY_INTERVAL)
                     continue
@@ -138,7 +139,7 @@ class Mumble(threading.Thread):
 
     def connect(self):
         """Connect to the server"""
-         # Get IPv4/IPv6 server address
+        # Get IPv4/IPv6 server address
         server_info = socket.getaddrinfo(self.host, self.port, type=socket.SOCK_STREAM)
 
         # Connect the SSL tunnel
@@ -152,7 +153,7 @@ class Mumble(threading.Thread):
             self.control_socket = ssl.wrap_socket(std_sock, certfile=self.certfile, keyfile=self.keyfile, ssl_version=ssl.PROTOCOL_TLSv1)
         try:
             self.control_socket.connect((self.host, self.port))
-            self.control_socket.setblocking(0)
+            self.control_socket.setblocking(False)
 
             # Perform the Mumble authentication
             version = mumble_pb2.Version()
@@ -505,7 +506,7 @@ class Mumble(threading.Thread):
                                                                    type,
                                                                    target)  # add the sound to the user's sound queue
 
-                    if newsound is None: # In case audio have been disable for specific users
+                    if newsound is None:  # In case audio have been disable for specific users
                         return
                     
                     self.callbacks(PYMUMBLE_CLBK_SOUNDRECEIVED, self.users[session.value], newsound)
