@@ -1,7 +1,7 @@
 API
 ===
 ## main Mumble object
-> `class Mumble(host, user, port=64738, password='', certfile=None, keyfile=None, reconnect=False, tokens=[], debug=False)`
+> `class Mumble(host, user, port=64738, password='', certfile=None, keyfile=None, reconnect=False, tokens=[], stereo=False,debug=False)`
 
 It should be quite straightforward. `debug=True` will generate a LOT of stdout messages. Otherwise it should be silent in normal conditions.
 Reconnect should allow the library to reconnect automatically if the server disconnect it.
@@ -13,6 +13,8 @@ The `certfile` parameter takes the path to a Mumble certificate in `.pem` format
 ```$ openssl pkcs12 -in PATH_TO_CERTFILE.p12 -out CERTFILE_NAME.pem -clcerts -nokeys``` for the cert file and
 
 ```$ openssl pkcs12 -in PATH_TO_CERTFILE.p12 -out CERTFILE_NAME.pem -nocerts -nodes``` for the key file.
+
+The `stereo` allow you to send stereo audio, only available with compatible mumble version (>1.3)
 
 > `Mumble.start()`
 
