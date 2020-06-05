@@ -13,7 +13,7 @@ The wiki/API explanation is [HERE](https://github.com/azlux/pymumble/blob/pymumb
 
 ### With pip
 
-- `pip install pymumble_py3`
+- `pip install pymumble`
 - You need to `import pymumble_py3 as pymumble` into your code.
 
 [![PyPI version](https://badge.fury.io/py/pymumble.svg)](https://badge.fury.io/py/pymumble)   Deployment script is available [here](https://packages.azlux.fr/scripts/pymumble.txt)
