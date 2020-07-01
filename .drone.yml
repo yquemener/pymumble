@@ -1,0 +1,18 @@
+kind: pipeline
+type: docker
+name: default
+
+steps:
+  - name: pypi
+    image: plugins/pypi
+    settings:
+      username:
+        from_secret: pypi_username
+      password:
+        from_secret: pypi_test_password
+      repository: https://test.pypi.org/legacy/
+    when:
+      branch:
+        - master
+      event:
+        - push

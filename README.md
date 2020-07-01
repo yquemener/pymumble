@@ -3,6 +3,8 @@
 ## Description
 This library acts as a mumble client, connecting to a murmur server, exchanging states and audio.
 
+[![Build Status](https://ci.azlux.fr/api/badges/azlux/pymumble/status.svg?ref=refs/heads/master)](https://ci.azlux.fr/azlux/pymumble)
+
 The wiki/API explanation is [HERE](https://github.com/azlux/pymumble/blob/pymumble_py3/API.md).
 
 ## Installing/Getting started
