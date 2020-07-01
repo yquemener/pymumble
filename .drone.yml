@@ -3,7 +3,7 @@ type: docker
 name: default
 
 steps:
-  - name: pypi
+  - name: pypi_publish
     image: plugins/pypi
     settings:
       username:
@@ -13,6 +13,6 @@ steps:
       repository: https://test.pypi.org/legacy/
     when:
       branch:
-        - master
+        - pymumble_py3
       event:
         - push
