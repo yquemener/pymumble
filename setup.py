@@ -1,5 +1,14 @@
 from setuptools import setup, find_packages
-from pymumble_py3.constants import PYMUMBLE_VERSION
+
+with open("pymumble_py3/constants.py") as f:
+  tp = f.readline()
+  version_from_constant = "0"
+  while tp:
+      if "PYMUMBLE_VERSION" in tp:
+        version_from_constant = tp.split('=')[1].strip()
+        break
+      tp = f.readline()
+
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
@@ -9,7 +18,7 @@ with open("requirements.txt") as f:
 
 setup(
     name="pymumble",
-    version=PYMUMBLE_VERSION,
+    version=version_from_constant,
     author='Azlux',
     author_email='github@azlux.fr',
     description="Mumble library used for multiple uses like making mumble bot.",
