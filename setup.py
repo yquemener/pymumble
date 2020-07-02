@@ -5,7 +5,7 @@ with open("pymumble_py3/constants.py") as f:
   version_from_constant = "0"
   while tp:
       if "PYMUMBLE_VERSION" in tp:
-        version_from_constant = tp.split('=')[1].strip()
+        version_from_constant = tp.split('=')[1].strip().replace('"', '')
         break
       tp = f.readline()
 

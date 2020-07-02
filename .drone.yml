@@ -3,7 +3,7 @@ type: docker
 name: default
 
 steps:
-  - name: pypi_publish
+  - name: pypi_test
     image: plugins/pypi
     settings:
       username:
@@ -16,3 +16,16 @@ steps:
         - pymumble_py3
       event:
         - push
+
+  - name: pypi_publish
+    image: plugins/pypi
+    settings:
+      username:
+        from_secret: pypi_username
+      password:
+        from_secret: pypi_password
+    when:
+      branch:
+        - pymumble_py3
+      event:
+        - tag
