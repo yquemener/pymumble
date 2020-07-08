@@ -70,8 +70,10 @@ class Mumble(threading.Thread):
         self.__opus_profile = PYMUMBLE_AUDIO_TYPE_OPUS_PROFILE
         self.stereo = stereo
         
-        if debug:
-            print(f"==== STEREO {stereo} ====")
+        if stereo:
+            self.Log.debug("Working in STEREO mode.")
+        else:
+            self.Log.debug("Working in MONO mode.")
 
         self.receive_sound = False  # set to True to treat incoming audio, otherwise it is simply ignored
 
