@@ -3,20 +3,6 @@ type: docker
 name: default
 
 steps:
-  - name: pypi_test
-    image: plugins/pypi
-    settings:
-      username:
-        from_secret: pypi_username
-      password:
-        from_secret: pypi_test_password
-      repository: https://test.pypi.org/legacy/
-    when:
-      branch:
-        - pymumble_py3
-      event:
-        - push
-
   - name: pypi_publish
     image: plugins/pypi
     settings:
@@ -24,8 +10,7 @@ steps:
         from_secret: pypi_username
       password:
         from_secret: pypi_password
-    when:
-      branch:
-        - pymumble_py3
-      event:
-        - tag
+
+trigger:
+  event:
+    - tag
