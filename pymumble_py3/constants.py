@@ -3,7 +3,7 @@
 import platform
 import sys
 
-PYMUMBLE_VERSION = "1.3"
+PYMUMBLE_VERSION = "1.3.1"
 
 # ============================================================================
 # Tunable parameters
