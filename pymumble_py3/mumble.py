@@ -69,7 +69,7 @@ class Mumble(threading.Thread):
         self.tokens = tokens
         self.__opus_profile = PYMUMBLE_AUDIO_TYPE_OPUS_PROFILE
         self.stereo = stereo
-
+        
         if stereo:
             self.Log.debug("Working in STEREO mode.")
         else:
@@ -524,8 +524,10 @@ class Mumble(threading.Thread):
                 except KeyError:  # sound received after user removed
                     pass
 
+                #            if len(message) - pos < size:
+                #                raise InvalidFormatError("Invalid audio frame size")
+
             pos += size  # go further in the packet, after the audio frame
-        #print(pos, len(message), terminator, struct.unpack("!f", bytes(message[-4:])))
         # TODO: get position info
 
     def set_application_string(self, string):
