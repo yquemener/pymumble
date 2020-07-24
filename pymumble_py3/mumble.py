@@ -69,7 +69,7 @@ class Mumble(threading.Thread):
         self.tokens = tokens
         self.__opus_profile = PYMUMBLE_AUDIO_TYPE_OPUS_PROFILE
         self.stereo = stereo
-        
+
         if stereo:
             self.Log.debug("Working in STEREO mode.")
         else:
@@ -85,6 +85,8 @@ class Mumble(threading.Thread):
 
         self.ready_lock = threading.Lock()  # released when the connection is fully established with the server
         self.ready_lock.acquire()
+
+        self.positional = None
 
     def init_connection(self):
         """Initialize variables that are local to a connection, (needed if the client automatically reconnect)"""
@@ -522,11 +524,8 @@ class Mumble(threading.Thread):
                 except KeyError:  # sound received after user removed
                     pass
 
-                #            if len(message) - pos < size:
-                #                raise InvalidFormatError("Invalid audio frame size")
-
             pos += size  # go further in the packet, after the audio frame
-
+        #print(pos, len(message), terminator, struct.unpack("!f", bytes(message[-4:])))
         # TODO: get position info
 
     def set_application_string(self, string):
@@ -656,6 +655,8 @@ class Mumble(threading.Thread):
                 userstate.texture = cmd.parameters["texture"]
             if "user_id" in cmd.parameters:
                 userstate.user_id = cmd.parameters["user_id"]
+            if "plugin_context" in cmd.parameters:
+                userstate.plugin_context = cmd.parameters["plugin_context"]
 
             self.send_message(PYMUMBLE_MSG_TYPES_USERSTATE, userstate)
             cmd.response = True
